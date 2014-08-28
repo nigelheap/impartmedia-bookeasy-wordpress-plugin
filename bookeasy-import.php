@@ -67,6 +67,7 @@ class BookeasyOperators_Import{
                 continue;
             }
 
+            // Create the post array
             $post = array(
               'post_content'   => $op[$this->postFields['post_content']],
               'post_title'     => $op[$this->postFields['post_title']], 
@@ -74,17 +75,20 @@ class BookeasyOperators_Import{
               'post_type'      => $postType,
             );  
 
-
+            // Does this operator id exist already?
             if(!empty($post_id)){
                 $post = array_merge($post, array('ID' => $post_id));
             } 
 
+            //ram this thing in the database.
             $inserted_id = wp_insert_post( $post );
 
+            // something happed??
             if( is_wp_error( $inserted_id ) ) {
                 return $return->get_error_message();
             }
 
+            // add the rest of the field in to post data
             foreach($op as $opKey => $opItem){
                 if(in_array($opKey, $this->postFields)){
                     continue;

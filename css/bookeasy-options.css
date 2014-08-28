@@ -1,0 +1,43 @@
+
+
+.custom-form{
+    margin-bottom: 10px;
+}
+
+.custom-form h3{
+    position: relative;
+    margin-bottom: 20px;
+    margin-left: -12px;
+    margin-right: -12px;
+    padding: 5px 12px;
+}
+
+.custom-form .inside{
+    margin: 0;
+}
+
+.custom-form p.description{
+    padding-bottom: 0;
+}
+
+.custom-form th{
+    width: 80px;
+}
+
+.custom-form input[type=text]{
+    width: 500px;
+}
+
+.inner .inner-inner{
+    padding: 10px;
+}
+
+#sync-message{
+    background: #eee;
+    width: 100%;
+}
+
+.custom-results h3{
+    margin-left: 0;
+    margin-bottom: 5px;
+}

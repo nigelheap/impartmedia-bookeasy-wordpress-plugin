@@ -56,17 +56,23 @@ class BookeasyOperators_Settings
                     settings_fields( 'BookeasyOperators_options' );   
                     do_settings_sections( 'bookeasy-operators' );
                     submit_button(); 
+                    
                 ?>
                 </div>
             </form>
+
+
             <form method="post" target="bookeasy-results" id="sync-form" action="<?php echo plugins_url('bookeasy-sync.php', __FILE__); ?>" class="postbox custom-form">
                 <div class="inside">
-                    <h3>Sync Bookeasy Operators</h3>
+                <h3>Sync Bookeasy Operators</h3>
                 <?php
                     submit_button('Sync Now'); 
                 ?>
                 </div>
             </form>
+
+
+
             <div class="postbox custom-form custom-results" id="sync-results">
                 <div class="inner">
                     <h3>Sync Results</h3>
@@ -107,14 +113,6 @@ class BookeasyOperators_Settings
             'BookeasyOperators_options_settings' // Section           
         );      
 
-        add_settings_field(
-            'vc_id', 
-            'VC ID', 
-            array( $this, 'vcid_callback' ), 
-            'bookeasy-operators', 
-            'BookeasyOperators_options_settings'
-        );  
-
         add_settings_section(
             'BookeasyOperators_options_posttypesettings', // ID
             'Post Type Settings', // Title
@@ -129,6 +127,16 @@ class BookeasyOperators_Settings
             'bookeasy-operators', // Page
             'BookeasyOperators_options_posttypesettings' // Section           
         );    
+
+
+        add_settings_field(
+            'taxonomy', // ID
+            'Taxonomy', // Title 
+            array( $this, 'taxonomy_callback' ), // Callback
+            'bookeasy-operators', // Page
+            'BookeasyOperators_options_posttypesettings' // Section           
+        );   
+        
 
     }
 
@@ -150,6 +158,9 @@ class BookeasyOperators_Settings
 
         if( isset( $input['posttype'] ) )
             $new_input['posttype'] = sanitize_text_field( $input['posttype'] );
+
+        if( isset( $input['taxonomy'] ) )
+            $new_input['taxonomy'] = sanitize_text_field( $input['taxonomy'] );
 
         return $new_input;
     }
@@ -181,18 +192,7 @@ class BookeasyOperators_Settings
             '<input type="text" id="url" name="'.$this->optionGroup.'[url]" value="%s" />',
             isset( $this->options['url'] ) ? esc_attr( $this->options['url']) : ''
         );
-        echo '<p class="description">Example : http://sjp.impartmedia.com/be/getOperatorsInformation?q=[vc_id] you must include [vc_id] as it will be replace with the value below</p>';
-    }
-
-    /** 
-     * Get the settings option array and print one of its values
-     */
-    public function vcid_callback()
-    {
-        printf(
-            '<input type="text" id="vc_id" name="'.$this->optionGroup.'[vc_id]" value="%s" />',
-            isset( $this->options['vc_id'] ) ? esc_attr( $this->options['vc_id']) : ''
-        );
+        echo '<p class="description">Example : http://sjp.impartmedia.com/be/getOperatorsInformation?q=10 10 being the vc_id</p>';
     }
 
 
@@ -202,7 +202,19 @@ class BookeasyOperators_Settings
         echo '<select id="posttype" name="'.$this->optionGroup.'[posttype]">';
         foreach ( $post_types as $post_type ) {
             $selected = ($post_type == $this->options['posttype'] ? ' selected="selected"' : '');
-            echo '<option'.$selected.'>' . $post_type . '</option>';
+            echo '<option'.$selected.' value="'.$post_type.'">' . $post_type . '</option>';
+        }
+        echo '</select>';
+    }
+
+
+    public function taxonomy_callback(){
+
+        $taxonomies = get_taxonomies(array('public' => true), 'objects');
+        echo '<select id="taxonomy" name="'.$this->optionGroup.'[taxonomy]">';
+        foreach ( $taxonomies as $taxonomy ) {
+            $selected = ($post_type == $this->options['taxonomy'] ? ' selected="selected"' : '');
+            echo '<option'.$selected.' value="'.$taxonomy->name.'">' . $taxonomy->label . '</option>';
         }
         echo '</select>';
     }

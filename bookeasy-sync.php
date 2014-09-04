@@ -11,6 +11,8 @@
 
     global $wpdb;
 
+    $type = isset($_GET['type']) ? $_GET['type'] : 'sync';
+
 ?>    
 <!doctype html>
 <html lang="en">
@@ -32,7 +34,7 @@
 <?php 
     
     $sync = new BookeasyOperators_Import();
-    $result = $sync->sync();
+    $result = $sync->$type();
 
     echo $result;
     echo '...Done';

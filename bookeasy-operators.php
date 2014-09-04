@@ -10,6 +10,7 @@ Author URI: http://www.nigelheap.com
 */
 
 require_once 'bookeasy-settings.php';
+require_once 'bookeasy-categories.php';
 require_once 'bookeasy-import.php';
 
 //register_activation_hook( __FILE__, 'bookeasyoperators_activation');

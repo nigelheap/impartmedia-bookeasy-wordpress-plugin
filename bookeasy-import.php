@@ -7,8 +7,10 @@ class BookeasyOperators_Import{
      * Holds the values to be used in the fields callbacks
      */
     private $options;
+    private $catOptions;
 
     public $optionGroup = 'BookeasyOperators_options';
+    public $optionGroupCategories = 'BookeasyOperators_categoriessync';
     public $postmetaPrefix = 'bookeasy';
 
     private $postFields = array(
@@ -35,15 +37,13 @@ class BookeasyOperators_Import{
         $this->options = get_option($this->optionGroup);
 
         $url = $this->options['url'];
-        $vc_id = $this->options['vc_id'];
         $postType = $this->options['posttype'];
 
-        if(empty($url) || empty($vc_id) || empty($postType)){
-            return 'Please set the url, vc_id and post type';
+        if(empty($url) || empty($postType)){
+            return 'Please set the url and post type';
         }
 
         // create the url and fetch the stuff
-        $url = str_replace('[vc_id]', $vc_id, $url);
         $json = file_get_contents($url);
         $arr = json_decode($json, true);
 
@@ -104,6 +104,47 @@ class BookeasyOperators_Import{
         }
 
         return 'Created:' . $create_count . ' Updated:'.$update_count. ' '; 
+
+    }
+
+
+
+    public function cats(){
+
+        global $wpdb;
+
+        $this->options = get_option($this->optionGroup);
+        $this->catOptions = get_option($this->optionGroupCategories);
+
+        $url = $this->options['url'];
+
+        if(empty($url)){
+            return 'Please set the url and post type';
+        }
+
+        // create the url and fetch the stuff
+        $json = file_get_contents($url);
+        $arr = json_decode($json, true);
+
+        if(!isset($arr['Operators']) || !is_array($arr['Operators'])){
+            return 'Url/Json Fail';
+        }
+
+        $types = array();
+        foreach($arr['Operators'] as $op){
+
+            // add the rest of the field in to post data
+            foreach($op as $opKey => $opItem){
+                if(strstr($opKey, 'Type')){
+                    $types[] = $opKey . '|' .$opItem;
+                }
+            }
+
+        }
+
+        $this->catOptions['bookeasy_cats'] = array_unique($types);
+        update_option($this->optionGroupCategories, $this->catOptions);
+        return count($this->catOptions['bookeasy_cats']) . ' Unique Categories <script> location.reload(); </script>'; 
 
     }
 

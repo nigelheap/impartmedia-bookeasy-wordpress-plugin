@@ -48,7 +48,12 @@ class BookeasyOperators_Settings
         ?>
         <div class="wrap">
             <?php screen_icon(); ?>
-            <h2>Bookeasy</h2>           
+            <h2>Bookeasy</h2>  
+            <ul class="subsubsub">
+                <li class="settings"><a href="options-general.php?page=bookeasy-operators" class="current">Settings</a> |</li>
+                <li class="cats"><a href="options-general.php?page=bookeasy-categories">Categories</a></li>
+            </ul>
+
             <form method="post" action="options.php" class="postbox custom-form">
                 <div class="inside custom-form-settings">
                 <?php

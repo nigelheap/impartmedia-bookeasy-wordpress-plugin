@@ -55,7 +55,10 @@ class BookeasyOperators_Categories
         <div class="wrap">
             <?php screen_icon(); ?>
             <h2>Bookeasy</h2>           
-
+            <ul class="subsubsub">
+                <li class="settings"><a href="options-general.php?page=bookeasy-operators">Settings</a> |</li>
+                <li class="cats"><a href="options-general.php?page=bookeasy-categories" class="current">Categories</a></li>
+            </ul>
 
             <form method="post" target="bookeasy-results" id="sync-form" action="<?php echo plugins_url('bookeasy-sync.php', __FILE__); ?>?type=cats" class="postbox custom-form">
                 <div class="inside">

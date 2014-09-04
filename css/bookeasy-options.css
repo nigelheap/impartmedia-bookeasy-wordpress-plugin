@@ -2,6 +2,7 @@
 
 .custom-form{
     margin-bottom: 10px;
+     clear: both;
 }
 
 .custom-form h3{
@@ -41,3 +42,4 @@
     margin-left: 0;
     margin-bottom: 5px;
 }
+

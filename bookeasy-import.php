@@ -8,9 +8,11 @@ class BookeasyOperators_Import{
      */
     private $options;
     private $catOptions;
+    private $catMapping;
 
     public $optionGroup = 'BookeasyOperators_options';
-    public $optionGroupCategories = 'BookeasyOperators_categoriessync';
+    public $optionGroupCategoriesSync = 'BookeasyOperators_categoriessync';
+    public $optionGroupCategories = 'BookeasyOperators_categories';
     public $postmetaPrefix = 'bookeasy';
 
     private $postFields = array(
@@ -18,36 +20,53 @@ class BookeasyOperators_Import{
         'post_content' => 'Description',
     );
 
+    private $catTypes = array(
+        'AccommodationType1', 
+        'AccommodationType2', 
+        'BusinessType1', 
+        'BusinessType2',
+        'BusinessType3',
+        'BusinessType4',
+        'SettingType1',
+        'SettingType2',
+        'Type1',
+        'Type2',
+        'Type3',
+        'Type4',
+    );
+
     /**
      * Start up
      */
     public function __construct(){
-
         //add_action( 'bookeasyoperators_daily_event_hook', array( $this, 'sync' ) );
 
         //returning for chaining
         return $this;
     }
 
-
+    /**
+     * Syncing the operators with post type and category
+     * @return [type] [description]
+     */
     public function sync(){
 
         global $wpdb;
 
         $this->options = get_option($this->optionGroup);
+        $this->catMapping = get_option($this->optionGroupCategories);
 
         $url = $this->options['url'];
         $postType = $this->options['posttype'];
+        $category = $this->options['taxonomy'];
 
         if(empty($url) || empty($postType)){
-            return 'Please set the url and post type';
+            return 'Please set the url, post type and taxonomy';
         }
 
         // create the url and fetch the stuff
         $json = file_get_contents($url);
         $arr = json_decode($json, true);
-
-        //var_dump($arr);
     
         if(!isset($arr['Operators']) || !is_array($arr['Operators'])){
             return 'Url/Json Fail';
@@ -89,11 +108,24 @@ class BookeasyOperators_Import{
             }
 
             // add the rest of the field in to post data
+            $cats = array();
             foreach($op as $opKey => $opItem){
                 if(in_array($opKey, $this->postFields)){
                     continue;
                 }
+
+                $key = $opKey . '|' . $opItem;
+                if(isset($this->catMapping[$key]) && !empty($this->catMapping[$key])){
+                    $cats[] = $this->catMapping[$key];
+                }
+
                 update_post_meta($inserted_id, $this->postmetaPrefix . '_' . $opKey, $opItem);
+            }
+
+            //set the cats if we need to
+            if(!empty($cats)){
+                // post id, cats, ammend to current cats
+                wp_set_object_terms($inserted_id, $cats, $category, true);
             }
 
             if(!empty($post_id)){
@@ -108,13 +140,16 @@ class BookeasyOperators_Import{
     }
 
 
-
+    /**
+     * Sync the categories from the json data.
+     * @return String result for iframe
+     */
     public function cats(){
 
         global $wpdb;
 
         $this->options = get_option($this->optionGroup);
-        $this->catOptions = get_option($this->optionGroupCategories);
+        $this->catOptions = get_option($this->optionGroupCategoriesSync);
 
         $url = $this->options['url'];
 
@@ -135,7 +170,7 @@ class BookeasyOperators_Import{
 
             // add the rest of the field in to post data
             foreach($op as $opKey => $opItem){
-                if(strstr($opKey, 'Type')){
+                if(in_array($opKey, $this->catTypes)){
                     $types[] = $opKey . '|' .$opItem;
                 }
             }
@@ -143,8 +178,8 @@ class BookeasyOperators_Import{
         }
 
         $this->catOptions['bookeasy_cats'] = array_unique($types);
-        update_option($this->optionGroupCategories, $this->catOptions);
-        return count($this->catOptions['bookeasy_cats']) . ' Unique Categories <script> location.reload(); </script>'; 
+        update_option($this->optionGroupCategoriesSync, $this->catOptions);
+        return count($this->catOptions['bookeasy_cats']) . ' Unique Categories <a href="/wp-admin/options-general.php?page=bookeasy-categories" target="_parent">Reload Page</a>'; 
 
     }
 

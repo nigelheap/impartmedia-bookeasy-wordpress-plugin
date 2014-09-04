@@ -173,8 +173,7 @@ class BookeasyOperators_Settings
     /** 
      * Print the Section text
      */
-    public function print_section_info()
-    {
+    public function print_section_info(){
         print 'Enter your settings below:';
     }
 
@@ -182,17 +181,15 @@ class BookeasyOperators_Settings
     /** 
      * Print the Section text
      */
-    public function print_posttype_section_info()
-    {
-        print 'Which post type do you want to save this in:';
+    public function print_posttype_section_info(){
+        print 'Which post type and category do you want to use:';
     }
 
 
     /** 
      * Get the settings option array and print one of its values
      */
-    public function url_callback()
-    {
+    public function url_callback(){
         printf(
             '<input type="text" id="url" name="'.$this->optionGroup.'[url]" value="%s" />',
             isset( $this->options['url'] ) ? esc_attr( $this->options['url']) : ''
@@ -202,7 +199,6 @@ class BookeasyOperators_Settings
 
 
     public function posttype_callback(){
-
         $post_types = get_post_types( '', 'names' ); 
         echo '<select id="posttype" name="'.$this->optionGroup.'[posttype]">';
         foreach ( $post_types as $post_type ) {
@@ -214,11 +210,10 @@ class BookeasyOperators_Settings
 
 
     public function taxonomy_callback(){
-
         $taxonomies = get_taxonomies(array('public' => true), 'objects');
         echo '<select id="taxonomy" name="'.$this->optionGroup.'[taxonomy]">';
         foreach ( $taxonomies as $taxonomy ) {
-            $selected = ($post_type == $this->options['taxonomy'] ? ' selected="selected"' : '');
+            $selected = ($taxonomy->name == $this->options['taxonomy'] ? ' selected="selected"' : '');
             echo '<option'.$selected.' value="'.$taxonomy->name.'">' . $taxonomy->label . '</option>';
         }
         echo '</select>';

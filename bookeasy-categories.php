@@ -36,6 +36,8 @@ class BookeasyOperators_Categories
             'bookeasy-categories', 
             array( $this, 'create_admin_page' )
         );
+
+
     }
 
     /**
@@ -60,17 +62,10 @@ class BookeasyOperators_Categories
                 <li class="cats"><a href="options-general.php?page=bookeasy-categories" class="current">Categories</a></li>
             </ul>
 
-            <form method="post" target="bookeasy-results" id="sync-form" action="<?php echo plugins_url('bookeasy-sync.php', __FILE__); ?>?type=cats" class="postbox custom-form">
-                <div class="inside">
-                    <h3>Sync Bookeasy Categories</h3>
-                    <?php
-                        submit_button('Sync Categories'); 
-                    ?>
-                </div>
-            </form>
+
             <?php if(!empty($this->settingsOptionsSync['bookeasy_cats'])): ?>
             <form method="post" action="options.php" class="postbox custom-form">
-                <div class="inside custom-form-settings">
+                <div class="inside custom-form-settings custom-mapping">
                 <?php
                     // This prints out all hidden setting fields
                     settings_fields( 'BookeasyOperators_categories' );   
@@ -82,7 +77,14 @@ class BookeasyOperators_Categories
             </form>
             <?php endif; ?>
 
-
+            <form method="post" target="bookeasy-results" id="sync-form" action="<?php echo plugins_url('bookeasy-sync.php', __FILE__); ?>?type=cats" class="postbox custom-form">
+                <div class="inside">
+                    <h3>Sync Bookeasy Categories</h3>
+                    <?php
+                        submit_button('Sync Categories'); 
+                    ?>
+                </div>
+            </form>
             <div class="postbox custom-form custom-results" id="sync-results">
                 <div class="inner">
                     <h3>Sync Results</h3>
@@ -102,6 +104,7 @@ class BookeasyOperators_Categories
      */
     public function page_init()
     {        
+
         register_setting(
             $this->optionGroup, // Option group
             $this->optionGroup // Option name
@@ -133,7 +136,7 @@ class BookeasyOperators_Categories
      */
     public function sanitize( $input )
     {
-        var_dump($input);
+        //var_dump($input);
         $new_input = array();
 
         if( isset( $input['mapping'] ) )
@@ -148,7 +151,7 @@ class BookeasyOperators_Categories
      */
     public function print_section_info()
     {
-        print 'Enter your settings below:';
+        print 'Please choose where the bookeasy Categories will be linked.';
     }
 
 
@@ -163,19 +166,28 @@ class BookeasyOperators_Categories
             return;
         }
         sort($bookeasyCats);
-
         $terms = get_terms(array($this->settingsOptions['taxonomy']), array('hide_empty'=>false));
-
         ?> 
             <table>
-                <?php foreach($bookeasyCats as $bookeasyCat): ?>
+                <?php
+                    $title = '';
+                    foreach($bookeasyCats as $bookeasyCat): 
+                    $name = explode('|', $bookeasyCat);
+                    if($title != $name[0]): 
+                ?>
                 <tr>
-                    <td><?php echo $bookeasyCat; ?></td>
+                    <td colspan="2">
+                        <h4><?php echo (isset($name[0]) ? $name[0] : ''); ?></h4>
+                    </td>
+                </tr>
+                <?php $title = $name[0]; endif; ?>
+                <tr>
+                    <td><?php echo (isset($name[1]) ? $name[1] : $bookeasyCat); ?></td>
                     <td>
                         <?php 
                             $attrs = 'name="'.$this->optionGroup.'['.$bookeasyCat.']"';
-                            echo $this->buildSelect($terms, $attrs); 
-
+                            $selected = isset($this->options[$bookeasyCat]) ? $this->options[$bookeasyCat] : 0;
+                            echo $this->buildSelect($terms, $attrs, $selected); 
                         ?>
                     </td>
                 </tr>
@@ -185,12 +197,11 @@ class BookeasyOperators_Categories
     }
 
     public function buildSelect($terms, $attrs, $selected = null){
-
         $output ="<select ".$attrs.">";
         $output .="<option value='0'>Please Select</option>";
         foreach($terms as $term){
-            $selected = ($term->term_id == $selected ? 'selected="selected"' : '');
-            $output .="<option value='".$term->term_id."' ".$selected.">".$term->name."</option>";
+            $sel = ($term->term_id == $selected ? 'selected="selected"' : '');
+            $output .="<option value='".$term->term_id."' ".$sel.">".$term->name."</option>";
         }
         $output .="</select>";
 

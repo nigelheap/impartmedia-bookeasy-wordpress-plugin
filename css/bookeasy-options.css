@@ -35,7 +35,7 @@
 
 #sync-message{
     background: #eee;
-    width: 100%;
+    padding: 10px;
 }
 
 .custom-results h3{
@@ -43,3 +43,19 @@
     margin-bottom: 5px;
 }
 
+.custom-mapping th{
+    display: none;
+}
+
+.custom-mapping td{
+    padding:0;
+}
+
+.custom-mapping td td{
+    padding: 15px 10px 15px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+.custom-mapping h4{
+    margin-bottom: 0;
+}

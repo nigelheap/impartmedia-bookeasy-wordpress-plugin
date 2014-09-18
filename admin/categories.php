@@ -51,8 +51,8 @@ class BookeasyOperators_Categories
         $this->settingsOptionsSync = get_option($this->optionGroupSync);
 
         // Add our CSS Styling
-        wp_enqueue_style( 'bookeasy-options', plugins_url('css/bookeasy-options.css', __FILE__) );
-        wp_enqueue_script( 'bookeasy-options', plugins_url('js/bookeasy-options.js', __FILE__) );
+        wp_enqueue_style( 'bookeasy-options', plugins_url('../css/bookeasy-options.css', __FILE__) );
+        wp_enqueue_script( 'bookeasy-options', plugins_url('../js/bookeasy-options.js', __FILE__) );
         ?>
         <div class="wrap">
             <?php screen_icon(); ?>
@@ -77,7 +77,7 @@ class BookeasyOperators_Categories
             </form>
             <?php endif; ?>
 
-            <form method="post" target="bookeasy-results" id="sync-form" action="<?php echo plugins_url('bookeasy-sync.php', __FILE__); ?>?type=cats" class="postbox custom-form">
+            <form method="post" target="bookeasy-results" id="sync-form" action="<?php echo plugins_url('../api/sync.php', __FILE__); ?>?type=cats" class="postbox custom-form">
                 <div class="inside">
                     <h3>Sync Bookeasy Categories</h3>
                     <?php
@@ -124,8 +124,6 @@ class BookeasyOperators_Categories
             'bookeasy-categories', // Page
             'BookeasyOperators_categories_settings' // Section           
         );      
- 
-        
 
     }
 

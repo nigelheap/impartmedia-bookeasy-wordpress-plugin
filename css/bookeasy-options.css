@@ -21,12 +21,13 @@
     padding-bottom: 0;
 }
 
-.custom-form th{
-    width: 80px;
-}
 
 .custom-form input[type=text]{
     width: 500px;
+}
+
+.custom-form textarea{
+    font-size: 12px;
 }
 
 .inner .inner-inner{

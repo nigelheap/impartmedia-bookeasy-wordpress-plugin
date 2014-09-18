@@ -1,18 +1,14 @@
 <?php
 
 
-class BookeasyOperators_Import{
+class BookeasyOperators_Import extends Bookeasy{
 
     /**
      * Holds the values to be used in the fields callbacks
      */
-    private $options;
-    private $catOptions;
-    private $catMapping;
+    public $catOptions;
+    public $catMapping;
 
-    public $optionGroup = 'BookeasyOperators_options';
-    public $optionGroupCategoriesSync = 'BookeasyOperators_categoriessync';
-    public $optionGroupCategories = 'BookeasyOperators_categories';
     public $postmetaPrefix = 'bookeasy';
 
     private $postFields = array(
@@ -57,12 +53,16 @@ class BookeasyOperators_Import{
         $this->catMapping = get_option($this->optionGroupCategories);
 
         $url = $this->options['url'];
+        $id = $this->options['vc_id'];
+
         $postType = $this->options['posttype'];
         $category = $this->options['taxonomy'];
 
-        if(empty($url) || empty($postType)){
-            return 'Please set the url, post type and taxonomy';
+        if(empty($url) || empty($postType) || empty($id)){
+            return 'Please set the url, vc_id, post type and taxonomy';
         }
+
+        $url = str_replace('[vc_id]', $id, $url);
 
         // create the url and fetch the stuff
         $json = file_get_contents($url);
@@ -116,7 +116,7 @@ class BookeasyOperators_Import{
 
                 $key = $opKey . '|' . $opItem;
                 if(isset($this->catMapping[$key]) && !empty($this->catMapping[$key])){
-                    $cats[] = $this->catMapping[$key];
+                    $cats[] = intval($this->catMapping[$key]);
                 }
 
                 update_post_meta($inserted_id, $this->postmetaPrefix . '_' . $opKey, $opItem);
@@ -152,11 +152,15 @@ class BookeasyOperators_Import{
         $this->catOptions = get_option($this->optionGroupCategoriesSync);
 
         $url = $this->options['url'];
+        $id = $this->options['vc_id'];
 
-        if(empty($url)){
-            return 'Please set the url and post type';
+        $category = $this->options['taxonomy'];
+
+        if(empty($url) || empty($category) || empty($id)){
+            return 'Please set the url, vc_id, post type and taxonomy';
         }
 
+        $url = str_replace('[vc_id]', $id, $url);
         // create the url and fetch the stuff
         $json = file_get_contents($url);
         $arr = json_decode($json, true);
@@ -179,7 +183,7 @@ class BookeasyOperators_Import{
 
         $this->catOptions['bookeasy_cats'] = array_unique($types);
         update_option($this->optionGroupCategoriesSync, $this->catOptions);
-        return count($this->catOptions['bookeasy_cats']) . ' Unique Categories <a href="/wp-admin/options-general.php?page=bookeasy-categories" target="_parent">Reload Page</a>'; 
+        return count($this->catOptions['bookeasy_cats']) . ' Unique Categories <a href="' .admin_url('options.php?page=bookeasy&tab=categories') .'" target="_parent">Reload Page</a>'; 
 
     }
 

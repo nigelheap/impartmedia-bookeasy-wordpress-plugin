@@ -3,7 +3,7 @@
     //you can cron this bro.
 
     define('WP_USE_THEMES', false);
-    require('../../../wp-load.php');
+    require('../../../../wp-load.php');
 
     if (!current_user_can('manage_options') && PHP_SAPI != 'cli') {
         die('No Access');

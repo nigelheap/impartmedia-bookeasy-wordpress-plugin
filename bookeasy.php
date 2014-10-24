@@ -10,6 +10,11 @@ Author URI: http://www.nigelheap.com
 */
 
 define('BOOKEASY_PLUGIN', 'bookeasy');
+define('BOOKEASY_ENDPOINT', 'http://sjp.impartmedia.com');
+define('BOOKEASY_OPERATORINFO', '/be/getOperatorsInformation?q=[vc_id]');
+define('BOOKEASY_OPERATORDETAILSSHORT', '/be/getOperatorsDetailsShort?q=[vc_id]&operators=[operators_id]');
+define('BOOKEASY_ACCOMROOMSDETAILS', '/be/getAccomRoomsDetails?q=[vc_id]&operators=[operators_id]');
+define('BOOKEASY_MODDATES', '/be/getOperatorModDates?q=[vc_id]');
 
 require_once 'includes/base.php';
 
@@ -40,7 +45,7 @@ function bookeasy_activation() {
  * Proper way to enqueue scripts and styles
  */
 function bookeasy_scripts() {
-    wp_enqueue_style( 'bookeasy-frontend', get_stylesheet_uri() );
+    //wp_enqueue_style( 'bookeasy-frontend', get_stylesheet_uri() );
     wp_enqueue_script( 'bookeasy-frontend', plugins_url('js/frontend.js', __FILE__), array(), '1.0.0', true );
 }
 

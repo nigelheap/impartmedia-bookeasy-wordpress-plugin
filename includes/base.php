@@ -57,6 +57,20 @@ class Bookeasy {
 
     }
 
+    public function storeRooms($operatorId, $postId){
+
+        $id = $this->options['vc_id'];
+        $url = BOOKEASY_ENDPOINT . BOOKEASY_OPERATORDETAILSSHORT;
+        $url = str_replace('[vc_id]', $id, $url);
+        $url = str_replace('[operators_id]', $operatorId, $url);
+
+        // create the url and fetch the stuff
+        $json = file_get_contents($url);
+        $arr = json_decode($json, true);
+
+
+    }
+
 
 }
 

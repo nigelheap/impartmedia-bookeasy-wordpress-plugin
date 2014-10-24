@@ -1,5 +1,5 @@
   
-  <span id="toolbar-cart"></span>
+  <span id="toolbar-cart"><span id="empty"></span></span>
   <script type="text/javascript">
 
     
@@ -12,11 +12,15 @@
             bookingURL:"<?php echo $bookingurl ?>",
             autoCollapse:true
         });
+
+        
     });
+
     jQuery(document).ready(function() {
         jQuery(".link-tripplanner-hover").hover(function() { showTripPlannerPopout(this); }, function() { hideTripPlannerPopout(); });
         jQuery("#shopping-cart-link").hover(function() { jQuery(this).click(); }, function() { });
     });
+
     function addToTripPlanner($url) {
         jQuery.get($url, function($numberItems) {
             jQuery("#toolbar-tripplanner a").text(parseInt($numberItems));

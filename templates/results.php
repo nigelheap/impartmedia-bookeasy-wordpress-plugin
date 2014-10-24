@@ -15,9 +15,9 @@ $w(function() {
         collapseRefineTools:true,
         showLocationFilter:true,
         ignoreSearchCookie:false,
-        itemDetailPageURL:"{url}",
+        itemDetailPageURL:"/book/{url}",
         scriptCustomURLs:"/accommodation/script/customurls",
-        //vcLocations:[{"name":"Albany Visitor Centre","lat":-35.02795,"lng":117.88597}],
+        vcLocations:[{"name":"Albany Visitor Centre","lat":-35.02795,"lng":117.88597}],
         enableRegionSearch:false
     });
 });

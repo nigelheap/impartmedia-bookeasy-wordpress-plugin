@@ -52,9 +52,28 @@ class BookeasyOperators_Import extends Bookeasy{
         $this->options = get_option($this->optionGroup);
         $this->catMapping = get_option($this->optionGroupCategories);
 
-        $url = $this->options['url'];
         $id = $this->options['vc_id'];
 
+        // Mod dates
+        $url = BOOKEASY_ENDPOINT . BOOKEASY_MODDATES;
+        $url = str_replace('[vc_id]', $id, $url);
+
+        // create the url and fetch the stuff
+        $json = file_get_contents($url);
+        $arr = json_decode($json, true);
+
+        $modDates = array();
+        if(!isset($arr['Items']) || !is_array($arr['Items'])){
+            return 'Url/Json Fail : Mod Dates';
+        }
+
+        foreach($arr['Items'] as $mod){
+            $modDates[$mod['OperatorId']] = $mod;
+        }
+
+        //Operators info
+        $url = BOOKEASY_ENDPOINT . BOOKEASY_OPERATORINFO;
+        
         $postType = $this->options['posttype'];
         $category = $this->options['taxonomy'];
 
@@ -72,15 +91,16 @@ class BookeasyOperators_Import extends Bookeasy{
             return 'Url/Json Fail';
         }
 
+        // Get the path to the upload directory.
+        $wp_upload_dir = wp_upload_dir();
+
         $create_count = 0;
         $update_count = 0;
         foreach($arr['Operators'] as $op){
 
-            // check if it exists based on the operator id
-            $postMeta_query = "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = '{$this->postmetaPrefix}_OperatorID' AND meta_value = %d";
-            $postMeta_postId = $wpdb->get_var($wpdb->prepare($postMeta_query, $op['OperatorID']));
+            $operatorId = $op['OperatorID'];
 
-            $post_id = $wpdb->get_var($wpdb->prepare("SELECT ID FROM $wpdb->posts WHERE ID = %d", $postMeta_postId));
+            $post_id = $this->getPostId($operatorId);
 
             if(empty($op[$this->postFields['post_title']])){
                 continue;
@@ -97,6 +117,11 @@ class BookeasyOperators_Import extends Bookeasy{
             // Does this operator id exist already?
             if(!empty($post_id)){
                 $post = array_merge($post, array('ID' => $post_id));
+                $currentModDates = array(
+                    'ImagesModDate' => get_post_meta($post_id, $this->postmetaPrefix . '_' . 'ImagesModDate', true),
+                    'DetailsModDate' => get_post_meta($post_id, $this->postmetaPrefix . '_' . 'DetailsModDate', true),
+                    'CLinkModDate' => get_post_meta($post_id, $this->postmetaPrefix . '_' . 'CLinkModDate', true),
+                );
             } 
 
             //ram this thing in the database.
@@ -105,6 +130,73 @@ class BookeasyOperators_Import extends Bookeasy{
             // something happed??
             if( is_wp_error( $inserted_id ) ) {
                 return $return->get_error_message();
+            }
+
+            if(empty($currentModDates['ImagesModDate']) || $modDates[$operatorId]['ImagesModDate'] != $currentModDates['ImagesModDate']){
+
+                if(!empty($op['Pictures']) && is_array($op['Pictures']) && !empty($op['Pictures'])){
+
+                    $currentItems = get_attached_media('image', $inserted_id);
+                    $imageCount = 1;
+                    foreach($op['Pictures'] as $path){
+
+                        $name = basename($path);
+
+                        if(file_exists($wp_upload_dir['path'] .'/'.$name)){
+                            continue; 
+                        }
+
+                        foreach ($currentItems as $currentItem) {
+                            if($name == basename($currentItem->guid)){
+                                continue 2;
+                            }
+                        }
+
+                        $ch = curl_init('http:'.$path);
+                        $fp = fopen($wp_upload_dir['path'] .'/'.$name, 'wb');
+                        curl_setopt($ch, CURLOPT_FILE, $fp);
+                        curl_setopt($ch, CURLOPT_HEADER, 0);
+                        curl_exec($ch);
+                        curl_close($ch);
+                        fclose($fp);
+
+                        // $filename should be the path to a file in the upload directory.
+                        $filename = $wp_upload_dir['path'] .'/'.$name;
+
+                        // Check the type of tile. We'll use this as the 'post_mime_type'.
+                        $filetype = wp_check_filetype( basename( $filename ), null );
+
+                        
+                        // Prepare an array of post data for the attachment.
+                        $attachment = array(
+                            'guid'           => $wp_upload_dir['url'] . '/' . basename( $filename ), 
+                            'post_mime_type' => $filetype['type'],
+                            'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $filename ) ),
+                            'post_content'   => '',
+                            'post_status'    => 'inherit'
+                        );
+
+                        // Insert the attachment.
+                        $attach_id = wp_insert_attachment( $attachment, $filename, $inserted_id );
+                        //error_log('Created Attachement:'. $attach_id);
+                        // Make sure that this file is included, as wp_generate_attachment_metadata() depends on it.
+                        require_once( ABSPATH . 'wp-admin/includes/image.php' );
+
+                        // Generate the metadata for the attachment, and update the database record.
+                        $attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
+                        wp_update_attachment_metadata( $attach_id, $attach_data );
+
+                        if($imageCount == 1 && !has_post_thumbnail($inserted_id)){
+                            add_post_meta($inserted_id, '_thumbnail_id', $attach_id, true);
+                        }
+                        
+
+                        $imageCount++;
+
+                    }
+
+                }
+
             }
 
             // add the rest of the field in to post data
@@ -128,11 +220,58 @@ class BookeasyOperators_Import extends Bookeasy{
                 wp_set_object_terms($inserted_id, $cats, $category, true);
             }
 
+            //Room details
+            $url = BOOKEASY_ENDPOINT . BOOKEASY_OPERATORDETAILSSHORT;
+            $url = str_replace('[vc_id]', $id, $url);
+            $url = str_replace('[operators_id]', $operatorId, $url);
+
+            // create the url and fetch the stuff
+            $json = file_get_contents($url);
+            $arr = json_decode($json, true);
+            if(!empty($arr)){
+                update_post_meta($inserted_id, $this->postmetaPrefix . '_ShortDetails', $arr);
+            }
+
+
+            //Room details
+            $url = BOOKEASY_ENDPOINT . BOOKEASY_ACCOMROOMSDETAILS;
+            $url = str_replace('[vc_id]', $id, $url);
+            $url = str_replace('[operators_id]', $operatorId, $url);
+
+            // create the url and fetch the stuff
+            $json = file_get_contents($url);
+            $arr = json_decode($json, true);
+            if(!empty($arr)){
+                update_post_meta($inserted_id, $this->postmetaPrefix . '_RoomDetails', $arr);
+            }
+
+
+
             if(!empty($post_id)){
                 $update_count++;
             } else {
                 $create_count++;
             }
+        }
+
+
+
+
+        if(!empty($modDates)){
+
+            foreach($modDates as $op){
+                foreach($modDates as $opKey => $opItem){
+                    if(in_array($opKey, array('OperatorId'))){
+                        continue;
+                    }
+
+                    $post_id = $this->getPostId($op['OperatorId']);
+                    if(!empty($post_id)){
+                        update_post_meta($post_id, $this->postmetaPrefix . '_' . $opKey, $opItem);
+                    }
+                }
+            }
+
         }
 
         return 'Created:' . $create_count . ' Updated:'.$update_count. ' '; 
@@ -184,6 +323,23 @@ class BookeasyOperators_Import extends Bookeasy{
         $this->catOptions['bookeasy_cats'] = array_unique($types);
         update_option($this->optionGroupCategoriesSync, $this->catOptions);
         return count($this->catOptions['bookeasy_cats']) . ' Unique Categories <a href="' .admin_url('options.php?page=bookeasy&tab=categories') .'" target="_parent">Reload Page</a>'; 
+
+    }
+
+
+    /**
+     * Helpers 
+     */
+    
+    public function getPostId($operatorId){
+
+        global $wpdb;
+
+        // check if it exists based on the operator id
+        $postMeta_query = "SELECT post_id FROM $wpdb->postmeta WHERE meta_key = '{$this->postmetaPrefix}_OperatorID' AND meta_value = %d";
+        $postMeta_postId = $wpdb->get_var($wpdb->prepare($postMeta_query, $operatorId));
+
+        return $wpdb->get_var($wpdb->prepare("SELECT ID FROM $wpdb->posts WHERE ID = %d", $postMeta_postId));
 
     }
 

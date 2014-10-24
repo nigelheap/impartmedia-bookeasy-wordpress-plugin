@@ -8,22 +8,15 @@ class Bookeasy_Settings extends Bookeasy{
         'sync' => 'Sync',
         'categories' => 'Categories',
         'config' => 'Config',
+        'info' => 'Info',
     );
 
     private $fields = array(
-        'url' => array(
-            'type' => 'text',
-            'title' => 'Url',
-            'desc' => 'Example : http://sjp.impartmedia.com/be/getOperatorsInformation?q=[vc_id] <br>
-                        [vc_id] will be replaced with the value below.  <br>
-                        We just need to use the vc_id for other things so that is why its stored seperatly',
-        ),
         'vc_id' => array(
             'type' => 'text',
             'title' => 'VC ID',
             'desc' => '',
         ),
-
         'posttype' => array(
             'type' => 'posttype',
             'title' => 'Post Type',
@@ -64,7 +57,7 @@ class Bookeasy_Settings extends Bookeasy{
         ),
         'itinerarycss' => array(
             'type' => 'text',
-            'title' => 'confirmation URL',
+            'title' => 'itinerary css',
             'desc' => 'Full url including protocol',
         ),
 
@@ -139,6 +132,9 @@ class Bookeasy_Settings extends Bookeasy{
                     case 'categories':
                         $this->category_page();
                     break;
+                    case 'info':
+                        $this->info_page();
+                    break;
                 endswitch; 
             ?>
         </div><!-- /.wrap -->
@@ -148,6 +144,59 @@ class Bookeasy_Settings extends Bookeasy{
     /**
      * Pages
      */
+    
+    public function info_page(){
+        // Set class property
+        ?>
+        <div class="wrap">
+
+            <div class="postbox custom-form custom-results">
+                <div class="inner">
+                    <h3>Short Codes</h3>
+                    <div class="inner-inner">
+                    <p>
+                        <pre><code>[bookeasy_horizontal_search]</code></pre>
+                        <br />
+                        <br />
+
+                    </p>
+                    <p>
+                        <pre><code>[bookeasy_single]</code></pre>
+                        <br />
+                        <br />
+                    </p>
+                    <p>
+                        <pre><code>[bookeasy_results]</code></pre>
+                        <br />
+                        <br />
+                    </p>
+                    <p>
+                        <pre><code>[bookeasy_cart]</code></pre>
+                        <br />
+                        <br />
+                    </p>
+                    <p>
+                        <pre><code>[bookeasy_book]</code></pre>
+                        <br />
+                        <br />
+                    </p>
+                    </div>
+                    <h3>Helpers</h3>
+                    <div class="inner-inner">
+                    <p>
+                        <pre><code>$rooms = Bookeasy_Helpers::rooms($operatorID, get_the_ID());</code></pre>
+                        <br />
+                        <br />
+
+                    </p>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+        <?php   
+    }
+
 
     public function sync_page(){
         // Set class property

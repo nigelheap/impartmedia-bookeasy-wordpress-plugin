@@ -1,6 +1,13 @@
-<div id="searchGadget" class="hybrid-widget">
-    <div class="BE-hybrid-gadget"></div>
-    <div class="specific-prop-search specific-prop-search-ultrasearch jsonly">
+<div class="horizontal-search">
+    <div id="searchGadget" class="hybrid-widget">
+        <div class="BE-hybrid-gadget"></div>
+    </div>
+</div> 
+
+<div id="toolbar-cart"><span id="empty"></span></div>
+
+<?php if(false): ?>
+    <div class="specific-prop-search specific-prop-search-ultrasearch jsonly"></div>
     <input type="text" name="operator_ultrasearch" id="operator_ultrasearch" style="font-family:Arial, Helvetica, sans-serif; font-size:12px; width:140px" value="Type to search..." onblur="if (this.value=='') this.value='Type to search...';" onfocus="if (this.value=='Type to search...') this.value='';" />
     <div class="simple-lightbox-cl"></div>
     <div class="specific-prop-popout specific-prop-popout-ultrasearch">
@@ -8,12 +15,10 @@
 
     </ul>
     </div>
-</div>
-
-<div id="toolbar-cart"><span id="empty"></span></div>
-
+<?php endif; ?>
 
 <script type="text/javascript">
+
 
 /*
 BE.gadget.cart("#toolbar-cart", {
@@ -31,6 +36,7 @@ setTimeout(function(){
             showRefineTools:true,
             collapseRefineTools:true,
             hybridOptions:{
+                <?php if($accom == 'true'): ?>
                 "accom":{
                     "tabName":"<?php echo $accom_tabname; ?>",
                     "period":2,
@@ -40,7 +46,10 @@ setTimeout(function(){
                     "infants":0,
                     "minDaysFromToday":0,
                     "searchLocation":"<?php echo $accom_search_path ?>"
-                },
+                }
+                <?php endif; ?>
+                <?php if($tours == 'true' && $accom == 'true'): ?>,<?php endif; ?>
+                <?php if($tours == 'true'): ?>
                 "tours":{
                     "tabName":"<?php echo $tours_tabname; ?>",
                     "period":2,
@@ -50,7 +59,7 @@ setTimeout(function(){
                     "infants":0,
                     "minDaysFromToday":0,
                     "searchLocation":"<?php echo $tours_search_path ?>"
-                }},
+                }<?php endif; ?>},
             enableRegionSearch:false
         });
     });

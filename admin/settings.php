@@ -180,10 +180,17 @@ class Bookeasy_Settings extends Bookeasy{
                         <br />
                         <br />
                     </p>
+                    <p>
+                        <pre><code>[bookeasy_confirm]</code></pre>
+                        <br />
+                        <br />
+                    </p>
+                    
                     </div>
                     <h3>Helpers</h3>
                     <div class="inner-inner">
                     <p>
+                        ... Soon
                         <pre><code>$rooms = Bookeasy_Helpers::rooms($operatorID, get_the_ID());</code></pre>
                         <br />
                         <br />

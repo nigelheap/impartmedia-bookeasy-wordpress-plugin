@@ -15,6 +15,7 @@ class Bookeasy_ShortCodes extends Bookeasy {
         add_shortcode('bookeasy_cart', array($this, 'cart'));
         add_shortcode('bookeasy_book', array($this, 'book'));
         add_shortcode('bookeasy_rooms', array($this, 'rooms'));
+        add_shortcode('bookeasy_confirm', array($this, 'confirm'));
     }
 
 
@@ -82,7 +83,7 @@ class Bookeasy_ShortCodes extends Bookeasy {
             'operatorID' => 0,
         );
 
-        $data = array_merge($atts, $this->options, $defaults);
+        $data = array_merge($defaults, $this->options, $atts);
 
 
         $return = '';
@@ -91,6 +92,17 @@ class Bookeasy_ShortCodes extends Bookeasy {
 
         return $return;
     }
+
+
+    public function confirm($atts){
+        $this->load();
+
+        $return = '';
+        $return .= $this->script();
+        $return .= BookEasy_Template::get('templates/confirm', $this->options);
+
+        return $return;
+    } 
 
 
     public function results($atts){

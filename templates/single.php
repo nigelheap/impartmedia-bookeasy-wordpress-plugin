@@ -51,12 +51,20 @@
                 type:"<?php echo $type; ?>",
                 productID:<?php echo $operatorid; ?>
                 ,campaignID: campaignID
+                ,showFutureEvents:true
+                ,showFutureEventsPeriod:365
+                ,showAllAccom: true
+                ,showAllTours: true
             });
         } else {
             BE.gadget.details("#itemGadget",{
                 vcID:<?php echo $vc_id ?>,
                 type:"<?php echo $type; ?>",
                 productID:<?php echo $operatorid; ?>
+                ,showFutureEvents:true
+                ,showFutureEventsPeriod:365
+                ,showAllAccom: true
+                ,showAllTours: true
             });
         }
 

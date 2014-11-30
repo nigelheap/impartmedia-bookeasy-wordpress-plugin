@@ -72,6 +72,7 @@ class BookeasyOperators_Import extends Bookeasy{
         }
 
         //Operators info
+        //$url = BOOKEASY_ENDPOINT . BOOKEASY_OPERATORINFO . '&operators=28656';
         $url = BOOKEASY_ENDPOINT . BOOKEASY_OPERATORINFO;
         
         $postType = $this->options['posttype'];
@@ -110,7 +111,6 @@ class BookeasyOperators_Import extends Bookeasy{
             $post = array(
               'post_content'   => $op[$this->postFields['post_content']],
               'post_title'     => $op[$this->postFields['post_title']], 
-              'post_status'    => 'publish',
               'post_type'      => $postType,
             );  
 
@@ -122,7 +122,10 @@ class BookeasyOperators_Import extends Bookeasy{
                     'DetailsModDate' => get_post_meta($post_id, $this->postmetaPrefix . '_' . 'DetailsModDate', true),
                     'CLinkModDate' => get_post_meta($post_id, $this->postmetaPrefix . '_' . 'CLinkModDate', true),
                 );
-            } 
+                $post['post_status'] = $this->getPostStatus($post_id);
+            } else {
+                $post['post_status'] = 'publish';
+            }
 
             //ram this thing in the database.
             $inserted_id = wp_insert_post( $post );
@@ -132,6 +135,9 @@ class BookeasyOperators_Import extends Bookeasy{
                 return $return->get_error_message();
             }
 
+            /**
+             * Process images
+             */
             if(empty($currentModDates['ImagesModDate']) || $modDates[$operatorId]['ImagesModDate'] != $currentModDates['ImagesModDate']){
 
                 if(!empty($op['Pictures']) && is_array($op['Pictures']) && !empty($op['Pictures'])){
@@ -140,7 +146,12 @@ class BookeasyOperators_Import extends Bookeasy{
                     $imageCount = 1;
                     foreach($op['Pictures'] as $path){
 
+                        $dir = dirname($path);                        
+
                         $name = basename($path);
+                        $dlname = str_replace(' ', '%20', $name);
+
+                        $name = str_replace(' ', '', $name);
 
                         if(file_exists($wp_upload_dir['path'] .'/'.$name)){
                             continue; 
@@ -151,8 +162,7 @@ class BookeasyOperators_Import extends Bookeasy{
                                 continue 2;
                             }
                         }
-
-                        $ch = curl_init('http:'.$path);
+                        $ch = curl_init('http:'.$dir . '/' . $dlname);
                         $fp = fopen($wp_upload_dir['path'] .'/'.$name, 'wb');
                         curl_setopt($ch, CURLOPT_FILE, $fp);
                         curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -199,7 +209,7 @@ class BookeasyOperators_Import extends Bookeasy{
 
             }
 
-            // add the rest of the field in to post data
+            // Save the updated dates to the database
             $cats = array();
             foreach($op as $opKey => $opItem){
                 if(in_array($opKey, $this->postFields)){
@@ -220,7 +230,10 @@ class BookeasyOperators_Import extends Bookeasy{
                 wp_set_object_terms($inserted_id, $cats, $category, true);
             }
 
-            //Room details
+            /**
+             * Extra accom details
+             */
+            
             $url = BOOKEASY_ENDPOINT . BOOKEASY_OPERATORDETAILSSHORT;
             $url = str_replace('[vc_id]', $id, $url);
             $url = str_replace('[operators_id]', $operatorId, $url);
@@ -233,7 +246,9 @@ class BookeasyOperators_Import extends Bookeasy{
             }
 
 
-            //Room details
+            /**
+             * Room details
+             */
             $url = BOOKEASY_ENDPOINT . BOOKEASY_ACCOMROOMSDETAILS;
             $url = str_replace('[vc_id]', $id, $url);
             $url = str_replace('[operators_id]', $operatorId, $url);
@@ -290,14 +305,15 @@ class BookeasyOperators_Import extends Bookeasy{
         $this->options = get_option($this->optionGroup);
         $this->catOptions = get_option($this->optionGroupCategoriesSync);
 
-        $url = $this->options['url'];
         $id = $this->options['vc_id'];
+        $url = BOOKEASY_ENDPOINT . BOOKEASY_OPERATORINFO;
 
         $category = $this->options['taxonomy'];
 
         if(empty($url) || empty($category) || empty($id)){
             return 'Please set the url, vc_id, post type and taxonomy';
         }
+
 
         $url = str_replace('[vc_id]', $id, $url);
         // create the url and fetch the stuff
@@ -340,6 +356,17 @@ class BookeasyOperators_Import extends Bookeasy{
         $postMeta_postId = $wpdb->get_var($wpdb->prepare($postMeta_query, $operatorId));
 
         return $wpdb->get_var($wpdb->prepare("SELECT ID FROM $wpdb->posts WHERE ID = %d", $postMeta_postId));
+
+    }
+
+    public function getPostStatus($post_id){
+
+        global $wpdb;
+
+        // check if it exists based on the operator id
+        $post_query = "SELECT post_status FROM $wpdb->posts WHERE ID = %d";
+        return $wpdb->get_var($wpdb->prepare($post_query, $post_id));
+
 
     }
 

@@ -14,6 +14,8 @@ define('BOOKEASY_ENDPOINT', 'http://sjp.impartmedia.com');
 define('BOOKEASY_OPERATORINFO', '/be/getOperatorsInformation?q=[vc_id]');
 define('BOOKEASY_OPERATORDETAILSSHORT', '/be/getOperatorsDetailsShort?q=[vc_id]&operators=[operators_id]');
 define('BOOKEASY_ACCOMROOMSDETAILS', '/be/getAccomRoomsDetails?q=[vc_id]&operators=[operators_id]');
+define('BOOKEASY_OPERATORDETAILSSHORT_ALL', '/be/getOperatorsDetailsShort?q=[vc_id]');
+define('BOOKEASY_ACCOMROOMSDETAILS_ALL', '/be/getAccomRoomsDetails?q=[vc_id]');
 define('BOOKEASY_MODDATES', '/be/getOperatorModDates?q=[vc_id]');
 
 require_once 'includes/base.php';

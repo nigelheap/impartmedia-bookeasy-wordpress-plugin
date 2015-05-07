@@ -41,14 +41,10 @@ class BookeasyOperators_Import extends Bookeasy{
         return $this;
     }
 
-    /**
-     * Syncing the operators with post type and category
-     * @return [type] [description]
-     */
-    public function sync(){
+    public function date(){
 
         global $wpdb;
-
+        
         $this->options = get_option($this->optionGroup);
         $this->catMapping = get_option($this->optionGroupCategories);
 
@@ -71,8 +67,61 @@ class BookeasyOperators_Import extends Bookeasy{
             $modDates[$mod['OperatorId']] = $mod;
         }
 
+
+        if(!empty($modDates)){
+
+            foreach($modDates as $op){
+                foreach($op as $opKey => $opItem){
+                    if(in_array($opKey, array('OperatorId'))){
+                        continue;
+                    }
+                    $postDate = date('Y-m-d H:i:s', strtotime($modDates[$op['OperatorId']]['DetailsModDate']));
+                    $post_id = $this->getPostId($op['OperatorId']);
+                    if(!empty($post_id)){
+                        $wpdb->query("UPDATE $wpdb->posts SET post_date='$postDate', post_date_gmt='$postDate' WHERE ID=".$post_id);
+                    }
+                }
+            }
+
+        }
+
+        
+
+    }
+
+    /**
+     * Syncing the operators with post type and category
+     * @return [type] [description]
+     */
+    public function sync(){
+
+        global $wpdb;
+        
+        $message = '';
+
+        $this->options = get_option($this->optionGroup);
+        $this->catMapping = get_option($this->optionGroupCategories);
+
+        $id = $this->options['vc_id'];
+
+        // Mod dates
+        $url = BOOKEASY_ENDPOINT . BOOKEASY_MODDATES;
+        $url = str_replace('[vc_id]', $id, $url);
+
+        // create the url and fetch the stuff
+        $json = file_get_contents($url);
+        $arr = json_decode($json, true);
+
+        $modDates = array();
+        if(!isset($arr['Items']) || !is_array($arr['Items'])){
+            return 'Url/Json Fail : Mod Dates';
+        }
+
+        foreach($arr['Items'] as $mod){
+            $modDates[$mod['OperatorId']] = $mod;
+        }
+        
         //Operators info
-        //$url = BOOKEASY_ENDPOINT . BOOKEASY_OPERATORINFO . '&operators=28656';
         $url = BOOKEASY_ENDPOINT . BOOKEASY_OPERATORINFO;
         
         $postType = $this->options['posttype'];
@@ -97,6 +146,7 @@ class BookeasyOperators_Import extends Bookeasy{
 
         $create_count = 0;
         $update_count = 0;
+        $image_update_count = 0;
         foreach($arr['Operators'] as $op){
 
             $operatorId = $op['OperatorID'];
@@ -107,11 +157,22 @@ class BookeasyOperators_Import extends Bookeasy{
                 continue;
             }
 
+            $postTime = strtotime($modDates[$operatorId]['DetailsModDate']);
+
+            if($postTime > time()){
+                $postDate = date('Y-m-d H:i:s', strtotime('-1 Hour'));
+            } else {
+                $postDate = date('Y-m-d H:i:s', $postTime);
+            }
+            
+            
             // Create the post array
             $post = array(
               'post_content'   => $op[$this->postFields['post_content']],
               'post_title'     => $op[$this->postFields['post_title']], 
               'post_type'      => $postType,
+              'post_date'      => $postDate,
+              'post_date_gmt'  => $postDate,
             );  
 
             // Does this operator id exist already?
@@ -123,28 +184,57 @@ class BookeasyOperators_Import extends Bookeasy{
                     'CLinkModDate' => get_post_meta($post_id, $this->postmetaPrefix . '_' . 'CLinkModDate', true),
                 );
                 $post['post_status'] = $this->getPostStatus($post_id);
+                
             } else {
                 $post['post_status'] = 'publish';
-            }
+                
 
-            //ram this thing in the database.
-            $inserted_id = wp_insert_post( $post );
-
-            // something happed??
-            if( is_wp_error( $inserted_id ) ) {
-                return $return->get_error_message();
             }
+            
+            if(empty($currentModDates['DetailsModDate']) || $modDates[$operatorId]['DetailsModDate'] != $currentModDates['DetailsModDate']){
+
+                //ram this thing in the database.
+                $inserted_id = wp_insert_post( $post );
+            
+
+                // something happed??
+                if( is_wp_error( $inserted_id ) ) {
+                    return $return->get_error_message();
+                }
+
+            } elseif(!empty($post_id)) {
+                $inserted_id = $post_id;
+            }
+            
 
             /**
              * Process images
              */
             if(empty($currentModDates['ImagesModDate']) || $modDates[$operatorId]['ImagesModDate'] != $currentModDates['ImagesModDate']){
-
+                
+                if(PHP_SAPI == 'cli'){
+                    echo 'Image Update PID ' . $inserted_id . " OID " . $operatorId .  "\n";
+                }
+                $message .= 'Image Update PID ' . $inserted_id . " OID " . $operatorId .  "\n";
+                
                 if(!empty($op['Pictures']) && is_array($op['Pictures']) && !empty($op['Pictures'])){
 
                     $currentItems = get_attached_media('image', $inserted_id);
+                    
+                    foreach ($currentItems as $currentItem) {
+                        wp_delete_attachment($currentItem->ID);
+                    }
+                    
+                    if(PHP_SAPI == 'cli'){
+                        print_r($op['Pictures']);
+                    }
+                    
+                    $message .= print_r($op['Pictures'], true);
+
                     $imageCount = 1;
                     foreach($op['Pictures'] as $path){
+                        
+                        $image_update_count++;
 
                         $dir = dirname($path);                        
 
@@ -154,14 +244,9 @@ class BookeasyOperators_Import extends Bookeasy{
                         $name = str_replace(' ', '', $name);
 
                         if(file_exists($wp_upload_dir['path'] .'/'.$name)){
-                            continue; 
+                            unlink($wp_upload_dir['path'] .'/'.$name);
                         }
-
-                        foreach ($currentItems as $currentItem) {
-                            if($name == basename($currentItem->guid)){
-                                continue 2;
-                            }
-                        }
+                        
                         $ch = curl_init('http:'.$dir . '/' . $dlname);
                         $fp = fopen($wp_upload_dir['path'] .'/'.$name, 'wb');
                         curl_setopt($ch, CURLOPT_FILE, $fp);
@@ -196,7 +281,7 @@ class BookeasyOperators_Import extends Bookeasy{
                         $attach_data = wp_generate_attachment_metadata( $attach_id, $filename );
                         wp_update_attachment_metadata( $attach_id, $attach_data );
 
-                        if($imageCount == 1 && !has_post_thumbnail($inserted_id)){
+                        if($imageCount == 1){
                             add_post_meta($inserted_id, '_thumbnail_id', $attach_id, true);
                         }
                         
@@ -209,73 +294,47 @@ class BookeasyOperators_Import extends Bookeasy{
 
             }
 
-            // Save the updated dates to the database
-            $cats = array();
-            foreach($op as $opKey => $opItem){
-                if(in_array($opKey, $this->postFields)){
-                    continue;
+            if(empty($currentModDates['DetailsModDate']) || $modDates[$operatorId]['DetailsModDate'] != $currentModDates['DetailsModDate']){
+
+                if(!empty($post_id)){
+                    $update_count++;
+                    $message .= 'Content Update PID ' . $inserted_id . " OID " . $operatorId .  "\n";
+                } else {
+                    $create_count++;
+                    $message .= 'Content Create PID ' . $inserted_id . " OID " . $operatorId .  "\n";
+                }
+                
+                // Save the updated dates to the database
+                $cats = array();
+                foreach($op as $opKey => $opItem){
+                    if(in_array($opKey, $this->postFields)){
+                        continue;
+                    }
+    
+                    $key = $opKey . '|' . $opItem;
+                    if(isset($this->catMapping[$key]) && !empty($this->catMapping[$key])){
+                        $cats[] = intval($this->catMapping[$key]);
+                    }
+    
+                    update_post_meta($inserted_id, $this->postmetaPrefix . '_' . $opKey, $opItem);
+                    
+                }
+    
+                //set the cats if we need to
+                if(!empty($cats)){
+                    // post id, cats, ammend to current cats
+                    wp_set_object_terms($inserted_id, $cats, $category, true);
                 }
 
-                $key = $opKey . '|' . $opItem;
-                if(isset($this->catMapping[$key]) && !empty($this->catMapping[$key])){
-                    $cats[] = intval($this->catMapping[$key]);
-                }
-
-                update_post_meta($inserted_id, $this->postmetaPrefix . '_' . $opKey, $opItem);
             }
 
-            //set the cats if we need to
-            if(!empty($cats)){
-                // post id, cats, ammend to current cats
-                wp_set_object_terms($inserted_id, $cats, $category, true);
-            }
-
-            /**
-             * Extra accom details
-             */
-            
-            $url = BOOKEASY_ENDPOINT . BOOKEASY_OPERATORDETAILSSHORT;
-            $url = str_replace('[vc_id]', $id, $url);
-            $url = str_replace('[operators_id]', $operatorId, $url);
-
-            // create the url and fetch the stuff
-            $json = file_get_contents($url);
-            $arr = json_decode($json, true);
-            if(!empty($arr)){
-                update_post_meta($inserted_id, $this->postmetaPrefix . '_ShortDetails', $arr);
-            }
-
-
-            /**
-             * Room details
-             */
-            $url = BOOKEASY_ENDPOINT . BOOKEASY_ACCOMROOMSDETAILS;
-            $url = str_replace('[vc_id]', $id, $url);
-            $url = str_replace('[operators_id]', $operatorId, $url);
-
-            // create the url and fetch the stuff
-            $json = file_get_contents($url);
-            $arr = json_decode($json, true);
-            if(!empty($arr)){
-                update_post_meta($inserted_id, $this->postmetaPrefix . '_RoomDetails', $arr);
-            }
-
-
-
-            if(!empty($post_id)){
-                $update_count++;
-            } else {
-                $create_count++;
-            }
         }
-
-
 
 
         if(!empty($modDates)){
 
             foreach($modDates as $op){
-                foreach($modDates as $opKey => $opItem){
+                foreach($op as $opKey => $opItem){
                     if(in_array($opKey, array('OperatorId'))){
                         continue;
                     }
@@ -288,8 +347,52 @@ class BookeasyOperators_Import extends Bookeasy{
             }
 
         }
+        
+        
+        $message .= 'Created:' . $create_count . ' Updated:'.$update_count. ' Operator Images Updates:'.$image_update_count;
+        
+        mail('nigel@itomic.com.au', 'Amazing Albany Sync', $message);
+        
+        //die();
+        
+        /**
+         * Extra accom details
+         */
+        
+        $url = BOOKEASY_ENDPOINT . BOOKEASY_OPERATORDETAILSSHORT_ALL;
+        $url = str_replace('[vc_id]', $id, $url);
 
-        return 'Created:' . $create_count . ' Updated:'.$update_count. ' '; 
+        // create the url and fetch the stuff
+        $json = file_get_contents($url);
+        $arr = json_decode($json, true);
+
+        if(!empty($arr)){
+            foreach($arr as $op){
+                $post_id = $this->getPostId($op['OperatorId']);
+                update_post_meta($post_id, $this->postmetaPrefix . '_ShortDetails', $op);
+            }
+        }
+
+        /**
+         * Room details
+         */
+        $url = BOOKEASY_ENDPOINT . BOOKEASY_ACCOMROOMSDETAILS_ALL;
+        $url = str_replace('[vc_id]', $id, $url);
+
+        // create the url and fetch the stuff
+        $json = file_get_contents($url);
+        $arr = json_decode($json, true);
+
+        if(!empty($arr)){
+            foreach($arr as $op){
+                $post_id = $this->getPostId($op['OperatorId']);
+                update_post_meta($post_id, $this->postmetaPrefix . '_RoomDetails', $op);
+            }
+        }
+
+        $this->date();
+        
+        return 'Created:' . $create_count . ' Updated:'.$update_count. ' Operator Images Updates:'.$image_update_count; 
 
     }
 

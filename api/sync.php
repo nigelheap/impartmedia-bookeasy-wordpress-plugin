@@ -3,7 +3,7 @@
     //you can cron this bro.
 
     define('WP_USE_THEMES', false);
-    require('../../../../wp-load.php');
+    require(__DIR__ . '/../../../../wp-load.php');
 
     if (!current_user_can('manage_options') && PHP_SAPI != 'cli') {
         die('No Access');
@@ -11,8 +11,14 @@
 
     global $wpdb;
 
-    $type = isset($_GET['type']) ? $_GET['type'] : 'sync';
+    if (isset($argv)) {
+        $type = isset($argv[1]) ? $argv[1] : 'sync';
+    }
+    else {
+        $type = isset($_GET['type']) ? $_GET['type'] : 'sync';
+    }
 
+    if(PHP_SAPI != 'cli'): 
 ?>    
 <!doctype html>
 <html lang="en">
@@ -32,12 +38,15 @@
 </head>
 <body>
 <?php 
-    
+    endif; 
     $sync = new BookeasyOperators_Import();
     $result = $sync->$type();
 
     echo $result;
     echo '...Done';
+    if(PHP_SAPI != 'cli'): 
 ?>
 </body>
-</html>
+</html><?php 
+    endif; 
+?>

@@ -12,6 +12,7 @@ class Bookeasy_ShortCodes extends Bookeasy {
         add_shortcode('bookeasy_horizontal_search', array($this, 'horizontal_search'));
         add_shortcode('bookeasy_single', array($this, 'single'));
         add_shortcode('bookeasy_results', array($this, 'results'));
+        add_shortcode('bookeasy_tour_results', array($this, 'tour_results'));
         add_shortcode('bookeasy_cart', array($this, 'cart'));
         add_shortcode('bookeasy_book', array($this, 'book'));
         add_shortcode('bookeasy_rooms', array($this, 'rooms'));
@@ -113,6 +114,18 @@ class Bookeasy_ShortCodes extends Bookeasy {
         $return .= BookEasy_Template::get('templates/results', $this->options);
 
         return $return;
+    }   
+
+
+    public function tour_results($atts){
+        $this->load();
+
+        $return = '';
+        $return .= $this->script();
+        $return .= BookEasy_Template::get('templates/tour-results', $this->options);
+
+        return $return;
+       
     }    
 
     public function book($atts){

@@ -351,7 +351,7 @@ class BookeasyOperators_Import extends Bookeasy{
         
         $message .= 'Created:' . $create_count . ' Updated:'.$update_count. ' Operator Images Updates:'.$image_update_count;
         
-        mail('nigel@itomic.com.au', 'Amazing Albany Sync', $message);
+        //mail('', '', $message);
         
         //die();
         

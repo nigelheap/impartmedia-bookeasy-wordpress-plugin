@@ -393,7 +393,7 @@ class Bookeasy_Settings extends Bookeasy{
 
     public function field_callback($args){
         $id = $args['id'];
-        $desc = $args['desc'];
+        $desc = isset($args['desc']) ? $args['desc'] : '';
 
         switch($args['type']){
 

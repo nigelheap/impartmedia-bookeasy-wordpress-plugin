@@ -3,11 +3,11 @@
 
 class Bookeasy_Settings extends Bookeasy{
 
-    
+
     private $tabs = array(
         'sync' => 'Sync',
-        'categories' => 'Categories',
         'config' => 'Config',
+        'categories' => 'Categories',
         'info' => 'Info',
     );
 
@@ -29,12 +29,12 @@ class Bookeasy_Settings extends Bookeasy{
         ),
         'accom_search_path' => array(
             'type' => 'text',
-            'title' => 'Accomodation Search Path',
+            'title' => 'Accommodation Search Path',
             'desc' => 'Relative to home page',
         ),
         'accom_tabname' => array(
             'type' => 'text',
-            'title' => 'Accomodation Tab Name',
+            'title' => 'Accommodation Tab Name',
         ),
         'tours_search_path' => array(
             'type' => 'text',
@@ -60,8 +60,11 @@ class Bookeasy_Settings extends Bookeasy{
             'title' => 'itinerary css',
             'desc' => 'Full url including protocol',
         ),
-
-
+        'notificaton_email' => array(
+            'type' => 'text',
+            'title' => "Notification Email",
+            'desc' => 'Email address to send the sync notifications',
+        ),
         'apikeys' => array(
             'type' => 'textarea',
             'title' => 'Api Keys',
@@ -88,9 +91,9 @@ class Bookeasy_Settings extends Bookeasy{
     public function add_plugin_page(){
         // This page will be under "Settings"
         add_menu_page(
+            'Bookeasy Manager',
             'Bookeasy',
-            'Bookeasy',
-            'administrator',
+            'edit_posts',
             'bookeasy',
             array( $this, 'page' ),
             'dashicons-calendar-alt'
@@ -120,31 +123,31 @@ class Bookeasy_Settings extends Bookeasy{
                 <a href="?page=<?php echo $this->nameSpace; ?>&tab=<?php echo $key; ?>" class="nav-tab <?php echo $active_tab == $key ? 'nav-tab-active' : ''; ?>"><?php echo $tab; ?></a>
                 <?php endforeach; ?>
             </h2>
-            <div>&nbsp;</div>            
+            <div>&nbsp;</div>
             <?php
-                switch ($active_tab): 
-                    case 'sync': 
+                switch ($active_tab):
+                    case 'sync':
                         $this->sync_page();
-                    break; 
+                    break;
                     case 'config':
                         $this->settings_page();
-                    break; 
+                    break;
                     case 'categories':
                         $this->category_page();
                     break;
                     case 'info':
                         $this->info_page();
                     break;
-                endswitch; 
+                endswitch;
             ?>
         </div><!-- /.wrap -->
     <?php
-    } // end 
+    } // end
 
     /**
      * Pages
      */
-    
+
     public function info_page(){
         // Set class property
         ?>
@@ -185,7 +188,7 @@ class Bookeasy_Settings extends Bookeasy{
                         <br />
                         <br />
                     </p>
-                    
+
                     </div>
                     <h3>Helpers</h3>
                     <div class="inner-inner">
@@ -199,9 +202,9 @@ class Bookeasy_Settings extends Bookeasy{
                     </div>
                 </div>
             </div>
-            
+
         </div>
-        <?php   
+        <?php
     }
 
 
@@ -214,7 +217,7 @@ class Bookeasy_Settings extends Bookeasy{
                 <div class="inside">
                 <h3>Sync Bookeasy Operators</h3>
                 <?php
-                    submit_button('Sync Now'); 
+                    submit_button('Sync Now');
                 ?>
                 </div>
             </form>
@@ -228,9 +231,9 @@ class Bookeasy_Settings extends Bookeasy{
                     </div>
                 </div>
             </div>
-            
+
         </div>
-        <?php   
+        <?php
     }
 
     public function settings_page(){ ?>
@@ -238,7 +241,7 @@ class Bookeasy_Settings extends Bookeasy{
             <form method="post" action="options.php" class="postbox custom-form">
                 <div class="inside custom-form-settings">
                 <?php
-                    settings_fields( $this->optionGroup );   
+                    settings_fields( $this->optionGroup );
                     do_settings_sections( $this->settingsName );
                     submit_button();
                 ?>
@@ -261,9 +264,9 @@ class Bookeasy_Settings extends Bookeasy{
                 <div class="inside custom-form-settings custom-mapping">
                 <?php
                     // This prints out all hidden setting fields
-                    settings_fields( $this->optionGroupCategories );   
+                    settings_fields( $this->optionGroupCategories );
                     do_settings_sections( $this->settingsNameCategories );
-                    submit_button(); 
+                    submit_button();
                 ?>
                 </div>
             </form>
@@ -273,7 +276,7 @@ class Bookeasy_Settings extends Bookeasy{
                 <div class="inside">
                     <h3>Sync Bookeasy Categories</h3>
                     <?php
-                        submit_button('Sync Categories'); 
+                        submit_button('Sync Categories');
                     ?>
                 </div>
             </form>
@@ -286,7 +289,7 @@ class Bookeasy_Settings extends Bookeasy{
                     </div>
                 </div>
             </div>
-            
+
         </div>
         <?php
     }
@@ -303,10 +306,10 @@ class Bookeasy_Settings extends Bookeasy{
         }
 
         switch(Bookeasy_Request::get('tab')){
-            case 'settings': 
+            case 'settings':
                 update_option($this->optionGroup, Bookeasy_Request::post($this->optionGroup));
             break;
-            case 'categories': 
+            case 'categories':
                 update_option($this->optionGroupCategories, Bookeasy_Request::post($this->optionGroupCategories));
             break;
         }
@@ -317,22 +320,22 @@ class Bookeasy_Settings extends Bookeasy{
     /**
      * Register and add settings
      */
-    public function admin_init(){  
+    public function admin_init(){
 
         // If the theme options don't exist, create them.
-        if( false == get_option( $this->optionGroup ) ) {  
+        if( false == get_option( $this->optionGroup ) ) {
             add_option( $this->optionGroup);
-        } // end if   
+        } // end if
 
         // If the theme options don't exist, create them.
-        if( false == get_option( $this->optionGroupCategories ) ) {  
+        if( false == get_option( $this->optionGroupCategories ) ) {
             add_option( $this->optionGroupCategories);
-        } // end if  
+        } // end if
 
         // If the theme options don't exist, create them.
-        if( false == get_option( $this->optionGroupCategoriesSync ) ) {  
+        if( false == get_option( $this->optionGroupCategoriesSync ) ) {
             add_option( $this->optionGroupCategoriesSync);
-        } // end if  
+        } // end if
 
         //$this->save();
 
@@ -344,25 +347,25 @@ class Bookeasy_Settings extends Bookeasy{
             'Settings', // Title
             array( $this, 'print_section_info' ), // Callback
             $this->settingsName // Page
-        );  
+        );
 
         foreach($this->fields as $id => $field){
 
             add_settings_field(
                 $id, // ID
-                $field['title'], // Title 
+                $field['title'], // Title
                 array($this, 'field_callback'), // Callback
                 $this->settingsName, // Page
-                'Bookeasy_options', // Section 
-                array_merge(array('id' => $id), $field)   
-            ); 
+                'Bookeasy_options', // Section
+                array_merge(array('id' => $id), $field)
+            );
 
-        }  
+        }
 
         register_setting(
             $this->optionGroup, // Option group
             $this->optionGroup // Option name
-        );      
+        );
 
         /**
          * Category page
@@ -372,45 +375,45 @@ class Bookeasy_Settings extends Bookeasy{
             'Linked Categories', // Title
             array( $this, 'print_cat_section_info' ), // Callback
             $this->settingsNameCategories // Page
-        );  
+        );
 
         add_settings_field(
             'mapping', // ID
-            'Mapping', // Title 
+            'Mapping', // Title
             array( $this, 'mapping_callback' ), // Callback
             $this->settingsNameCategories, // Page
-            'Bookeasy_categories_settings' // Section           
-        );      
+            'Bookeasy_categories_settings' // Section
+        );
 
         register_setting(
             $this->optionGroupCategories, // Option group
             $this->optionGroupCategories // Option name
         );
-        
+
 
     }
 
 
     public function field_callback($args){
         $id = $args['id'];
-        $desc = isset($args['desc']) ? $args['desc'] : '';
+        $desc = $args['desc'];
 
         switch($args['type']){
 
-            case 'text': 
+            case 'text':
                 printf(
                     '<input type="text" id="'.$id.'" name="'.$this->optionGroup.'['.$id.']" value="%s" />',
                     isset( $this->options[$id] ) ? esc_attr( $this->options[$id]) : ''
                 );
                 echo '<p class="description">'.$desc.'</p>';
             break;
-            case 'textarea': 
+            case 'textarea':
                 echo '<textarea id="'.$id.'" name="'.$this->optionGroup.'['.$id.']" style="width:90%; height:100px;">'.
                 (isset( $this->options[$id] ) ? esc_attr( $this->options[$id]) : '')
                 .'</textarea>';
                 echo '<p class="description">'.$desc.'</p>';
             break;
-            case 'taxonomy': 
+            case 'taxonomy':
                 $taxonomies = get_taxonomies(array('public' => true), 'objects');
                 echo '<select id="'.$id.'" name="'.$this->optionGroup.'['.$id.']">';
                 foreach ( $taxonomies as $taxonomy ) {
@@ -420,8 +423,8 @@ class Bookeasy_Settings extends Bookeasy{
                 echo '</select>';
 
             break;
-            case 'posttype': 
-                $post_types = get_post_types( '', 'names' ); 
+            case 'posttype':
+                $post_types = get_post_types( '', 'names' );
                 echo '<select id="'.$id.'" name="'.$this->optionGroup.'['.$id.']">';
                 foreach ( $post_types as $post_type ) {
                     $selected = ($post_type == $this->options[$id] ? ' selected="selected"' : '');
@@ -434,7 +437,7 @@ class Bookeasy_Settings extends Bookeasy{
 
     }
 
-    /** 
+    /**
      * Get the settings option array and print one of its values
      */
     public function mapping_callback(){
@@ -446,13 +449,13 @@ class Bookeasy_Settings extends Bookeasy{
         }
         sort($bookeasyCats);
         $terms = get_terms(array($this->options['taxonomy']), array('hide_empty'=>false));
-        ?> 
+        ?>
             <table>
                 <?php
                     $title = '';
-                    foreach($bookeasyCats as $bookeasyCat): 
+                    foreach($bookeasyCats as $bookeasyCat):
                     $name = explode('|', $bookeasyCat);
-                    if($title != $name[0]): 
+                    if($title != $name[0]):
                 ?>
                 <tr>
                     <td colspan="2">
@@ -463,10 +466,10 @@ class Bookeasy_Settings extends Bookeasy{
                 <tr>
                     <td><?php echo (isset($name[1]) ? $name[1] : $bookeasyCat); ?></td>
                     <td>
-                        <?php 
+                        <?php
                             $attrs = 'name="'.$this->optionGroupCategories.'['.$bookeasyCat.']"';
                             $selected = isset($this->categories[$bookeasyCat]) ? $this->categories[$bookeasyCat] : 0;
-                            echo $this->buildSelect($terms, $attrs, $selected); 
+                            echo $this->buildSelect($terms, $attrs, $selected);
                         ?>
                     </td>
                 </tr>
@@ -475,16 +478,16 @@ class Bookeasy_Settings extends Bookeasy{
         <?php
     }
 
-    
 
-    /** 
+
+    /**
      * Print the Section text
      */
     public function print_section_info(){
         print 'Enter your settings below:';
     }
 
-    /** 
+    /**
      * Print the Section text
      */
     public function print_cat_section_info()

@@ -1,17 +1,35 @@
 <?php
 
-
 class Bookeasy_Helpers extends Bookeasy {
 
     public static $_instance;
+
+    public function __construct(){
+        add_action("wp_ajax_refresh_operator", array($this, 'refresh_operator'));
+        add_action("wp_ajax_nopriv_refresh_operator", array($this, 'refresh_operator'));
+    }
+
+    public function refresh_operator(){
+        $operators = isset($_REQUEST['operators']) ? explode(',', $_REQUEST['operators']) : false;
+
+        if(!empty($operators) && is_array($operators)){
+            $sync = new BookeasyOperators_Import();
+            echo $sync->sync($operators);  
+            die();
+        }
+
+        echo json_encode(array(
+            'updated' => 0,
+            'created' => 0,
+        ));
+        die();
+    }
 
     public function loadRooms($operatorId, $postId){
 
         if(empty($operatorId)){
             return false;
         }
-
-
 
         $url = BOOKEASY_ENDPOINT . BOOKEASY_ACCOMROOMSDETAILS;
         $url = str_replace('[vc_id]', $id, $url);
@@ -36,7 +54,6 @@ class Bookeasy_Helpers extends Bookeasy {
 
 
     }
-
     
 
     public static function rooms($operatorId, $postId){
@@ -61,5 +78,5 @@ class Bookeasy_Helpers extends Bookeasy {
 
 }
 
-//new Bookeasy_Helpers();
+new Bookeasy_Helpers();
 

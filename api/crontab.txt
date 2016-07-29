@@ -1,0 +1,2 @@
+# put in crontab.txt and run 'crontab crontab.txt' and 'crontab -l' to check a job was created
+0 0 * * * php /var/www/wp-content/plugins/bookeasy/api/sync.php

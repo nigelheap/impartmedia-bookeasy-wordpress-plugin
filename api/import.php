@@ -161,8 +161,8 @@ class BookeasyOperators_Import extends Bookeasy{
     public function sync($onlySync = null){
 
         $this->load();
-	    
-		set_time_limit(1800);
+        
+        set_time_limit(1800);
         global $wpdb;
         
         //date_default_timezone_set(get_option('timezone_string'));
@@ -395,7 +395,7 @@ class BookeasyOperators_Import extends Bookeasy{
                                 curl_setopt($ch, CURLOPT_FILE, $fp);
                                 curl_setopt($ch, CURLOPT_HEADER, 0);
                                 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    +                           curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                                 curl_exec($ch);
                                 curl_close($ch);
                                 fclose($fp);

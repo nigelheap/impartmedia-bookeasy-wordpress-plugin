@@ -161,8 +161,8 @@ class BookeasyOperators_Import extends Bookeasy{
     public function sync($onlySync = null){
 
         $this->load();
-	    
-		set_time_limit(1800);
+        
+        set_time_limit(1800);
         global $wpdb;
         
         //date_default_timezone_set(get_option('timezone_string'));

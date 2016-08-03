@@ -60,6 +60,11 @@ class Bookeasy_Settings extends Bookeasy{
             'title' => 'itinerary css',
             'desc' => 'Full url including protocol',
         ),
+        'location_ids' => array(
+           'type' => 'text',
+           'title' => "Location IDs",
+           'desc' => 'Comma seperated list of location IDs to sync. If this is empty it will import all the operators. Eg 12,34,78 ',
+        ),
         'notificaton_email' => array(
             'type' => 'text',
             'title' => "Notification Email",
@@ -80,10 +85,54 @@ class Bookeasy_Settings extends Bookeasy{
     public function __construct()
     {
         add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
+        add_action( 'admin_menu', array( $this, 'add_post_columns' ) );
         add_action( 'admin_init', array( $this, 'admin_init' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 
+        $options = get_option( $this->optionGroup );
+        if(!empty($options['posttype'])){
+
+            $post_type = $options['posttype'];
+            // ONLY  CUSTOM TYPE POSTS
+            add_filter('manage_'.$post_type.'_posts_columns', array( 
+                $this, 
+                'post_column'
+            ), 10);
+
+            add_action('manage_'.$post_type.'_posts_custom_column', array(
+                $this, 
+                'posts_custom_column'
+            ), 10, 2);
+
+        }
+
     }
+
+
+    /**
+     * Add column header
+     * @param  Array $columns 
+     * @return  Array   
+     */
+    public function post_column($columns){
+        $columns['bookeasy'] = __( 'Bookeasy', 'bookeasy' );
+        return $columns;
+    }
+
+    /**
+     * Add call content
+     * @param  Array $column  
+     * @param  Int $post_id 
+     * @return Null          
+     */
+    public function posts_custom_column($column, $post_id){
+        if($column == 'bookeasy'){
+            $operatorID = get_post_meta($post_id, 'bookeasy_OperatorID', true);
+            echo '<a href="#update_operator" class="button-primary update_operator" data-operator-id="'.$operatorID.'">Update operator</a>';
+        }
+    }
+
+
 
     /**
      * Add options page
@@ -96,7 +145,8 @@ class Bookeasy_Settings extends Bookeasy{
             'edit_posts',
             'bookeasy',
             array( $this, 'page' ),
-            'dashicons-calendar-alt'
+            'dashicons-calendar-alt',
+            30
         );
     }
 
@@ -105,6 +155,8 @@ class Bookeasy_Settings extends Bookeasy{
         // Add our CSS Styling
         wp_enqueue_style( 'bookeasy-options', plugins_url('../css/bookeasy-options.css', __FILE__), array(), false, false);
         wp_enqueue_script( 'bookeasy-options', plugins_url('../js/bookeasy-options.js', __FILE__), array(), false, false);
+
+        wp_localize_script( 'bookeasy-options', 'bookeasyAjax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' )));   
     }
 
 

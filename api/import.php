@@ -280,12 +280,18 @@ class BookeasyOperators_Import extends Bookeasy{
         // Get the path to the upload directory.
         $wp_upload_dir = wp_upload_dir();
 
+        $include_locations = array();
+        $location_ids = trim($this->options['location_ids']);
+        if(!empty($location_ids)){
+            $include_locations = explode(',', $location_ids);
+        }
+
         $create_count = 0;
         $update_count = 0;
         $image_update_count = 0;
         $operatorsUpdated = array();
         $operatorsCreated = array();
-        
+
 
         foreach($arr['Operators'] as $op){
 
@@ -294,6 +300,17 @@ class BookeasyOperators_Import extends Bookeasy{
             $forced = (!is_null($onlySync) && in_array($operatorId, $onlySync));
 
             $post_id = $this->getPostId($operatorId);
+
+            if(!empty($include_locations) && is_array($op['Locations']) && !empty($op['Locations'])){
+               foreach($op['Locations'] as $location){
+                   if(!in_array($location['LocationId'], $include_locations)){
+                       if(!empty($post_id)){
+                           $this->markDraft($post_id);
+                       }
+                       continue 2;
+                   }
+               }
+            }
 
             if(empty($op[$this->postFields['post_title']])){
                 continue;
@@ -395,7 +412,7 @@ class BookeasyOperators_Import extends Bookeasy{
                                 curl_setopt($ch, CURLOPT_FILE, $fp);
                                 curl_setopt($ch, CURLOPT_HEADER, 0);
                                 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    +                           curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+                                curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                                 curl_exec($ch);
                                 curl_close($ch);
                                 fclose($fp);
@@ -801,11 +818,17 @@ class BookeasyOperators_Import extends Bookeasy{
     }
 
 
-
-
     /**
      * Helpers 
      */
+    
+    public function markDraft($post_id){
+        $post = array(
+            'ID' => $post_id, 
+            'post_status' => 'draft'
+        );
+        wp_update_post($post);
+    }
     
     public function getPostId($operatorId){
 

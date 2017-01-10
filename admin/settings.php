@@ -85,7 +85,6 @@ class Bookeasy_Settings extends Bookeasy{
     public function __construct()
     {
         add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
-        add_action( 'admin_menu', array( $this, 'add_post_columns' ) );
         add_action( 'admin_init', array( $this, 'admin_init' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 
@@ -469,7 +468,7 @@ class Bookeasy_Settings extends Bookeasy{
                 $taxonomies = get_taxonomies(array('public' => true), 'objects');
                 echo '<select id="'.$id.'" name="'.$this->optionGroup.'['.$id.']">';
                 foreach ( $taxonomies as $taxonomy ) {
-                    $selected = ($taxonomy->name == $this->options[$id] ? ' selected="selected"' : '');
+                    $selected = (!empty($this->options[$id]) && $taxonomy->name == $this->options[$id] ? ' selected="selected"' : '');
                     echo '<option'.$selected.' value="'.$taxonomy->name.'">' . $taxonomy->label . '</option>';
                 }
                 echo '</select>';
@@ -479,7 +478,7 @@ class Bookeasy_Settings extends Bookeasy{
                 $post_types = get_post_types( '', 'names' );
                 echo '<select id="'.$id.'" name="'.$this->optionGroup.'['.$id.']">';
                 foreach ( $post_types as $post_type ) {
-                    $selected = ($post_type == $this->options[$id] ? ' selected="selected"' : '');
+                    $selected = (!empty($this->options[$id]) && $post_type == $this->options[$id] ? ' selected="selected"' : '');
                     echo '<option'.$selected.' value="'.$post_type.'">' . $post_type . '</option>';
                 }
                 echo '</select>';

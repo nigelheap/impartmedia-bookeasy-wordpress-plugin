@@ -38,7 +38,13 @@ class BookeasyOperators_Import extends Bookeasy{
      * Start up
      */
     public function __construct(){
-        $this->tz = new DateTimeZone(get_option('timezone_string'));
+        $time_zone = get_option('timezone_string');
+        
+        if(empty($time_zone)){
+            $time_zone = date_default_timezone_get();
+        }
+
+        $this->tz = new DateTimeZone($time_zone);
         $this->tzUTC = new DateTimeZone('UTC');
 
         //returning for chaining

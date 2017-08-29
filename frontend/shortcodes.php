@@ -37,7 +37,7 @@ class Bookeasy_ShortCodes extends Bookeasy {
      */
     
 
-    public function horizontal_search($atts){
+    public function horizontal_search($atts = array()){
         $this->load();
 
         if(empty($atts)){
@@ -95,7 +95,7 @@ class Bookeasy_ShortCodes extends Bookeasy {
     }
 
 
-    public function confirm($atts){
+    public function confirm($atts = array()){
         $this->load();
 
         $return = '';
@@ -106,7 +106,7 @@ class Bookeasy_ShortCodes extends Bookeasy {
     } 
 
 
-    public function results($atts){
+    public function results($atts = array()){
         $this->load();
 
         $return = '';
@@ -117,7 +117,7 @@ class Bookeasy_ShortCodes extends Bookeasy {
     }   
 
 
-    public function tour_results($atts){
+    public function tour_results($atts = array()){
         $this->load();
 
         $return = '';
@@ -128,7 +128,7 @@ class Bookeasy_ShortCodes extends Bookeasy {
        
     }    
 
-    public function book($atts){
+    public function book($atts = array()){
         $this->load();
 
         $return = '';

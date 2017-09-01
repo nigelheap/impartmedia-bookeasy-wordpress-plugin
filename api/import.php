@@ -34,17 +34,23 @@ class BookeasyOperators_Import extends Bookeasy{
         'Type4',
     );
 
+
+    private $defaultMeta = array(
+        'Directions',
+        'Email',
+        'Website',
+        'ResidentialAddress',
+        'Telephone1',
+        'Cancellation',
+        'OperatorLogo',
+        'Facilities',
+    );
+
     /**
      * Start up
      */
     public function __construct(){
-        $time_zone = get_option('timezone_string');
-        
-        if(empty($time_zone)){
-            $time_zone = date_default_timezone_get();
-        }
-
-        $this->tz = new DateTimeZone($time_zone);
+        $this->tz = new DateTimeZone(get_option('timezone_string'));
         $this->tzUTC = new DateTimeZone('UTC');
 
         //returning for chaining
@@ -148,15 +154,13 @@ class BookeasyOperators_Import extends Bookeasy{
             $date = $compare->modify('-3 Hours');
         }
 
-        $post_date_gmt = $date->format('Y-m-d H:i:s');
+        $post_date_gmt = $date->modify('-1 Day')->format('Y-m-d H:i:s');
         $date->setTimezone($this->tz);
-        $post_date = $date->format('Y-m-d H:i:s');
+        $post_date = $date->modify('-1 Day')->format('Y-m-d H:i:s');
 
 
         return array($post_date, $post_date_gmt);
     }
-
-
 
 
 
@@ -177,6 +181,8 @@ class BookeasyOperators_Import extends Bookeasy{
         
         $message = '';
 
+    
+        $this->log(print_r(ini_get('memory_limit'), true));
 
         $this->options = get_option($this->optionGroup);
         $this->catMapping = get_option($this->optionGroupCategories);
@@ -215,10 +221,14 @@ class BookeasyOperators_Import extends Bookeasy{
 
                     $currentImages = $this->rawOptionValue($post_id, $this->postmetaPrefix . '_Pictures');
 
+                    //$this->log(print_r(array($currentModDates, $mod), true));
+
+                    // update imaged based on DetailsModDate
                     if(empty($currentModDates['DetailsModDate']) || $mod['DetailsModDate'] != $currentModDates['DetailsModDate']){
                         $toLoad[] = $mod['OperatorId'];
                     }
 
+                    // Include images to update ImagesModDate
                     if(!empty($mod['ImagesModDate']) || empty($currentImages)){
                         if(empty($currentModDates['ImagesModDate']) || $mod['ImagesModDate'] != $currentModDates['ImagesModDate']){
                             $toLoad[] = $mod['OperatorId'];
@@ -232,6 +242,9 @@ class BookeasyOperators_Import extends Bookeasy{
                 $modDates[$mod['OperatorId']] = $mod;
             }
         }
+
+
+        $this->log(print_r(array('toLoad' => count($toLoad)), true));
 
         //Operators info
         $url = BOOKEASY_ENDPOINT . BOOKEASY_OPERATORINFO;
@@ -324,19 +337,29 @@ class BookeasyOperators_Import extends Bookeasy{
 
             list($post_date, $post_date_gmt) = $this->getDates($modDates[$operatorId]['DetailsModDate']);
             
+            $post_title = $op[$this->postFields['post_title']];
+            $post_name = sanitize_title($post_title);
+            
             // Create the post array
             $post = array(
               'post_content'   => $op[$this->postFields['post_content']],
-              'post_title'     => $op[$this->postFields['post_title']], 
+              'post_title'     => $post_title,
+              'post_name'      => $post_name, 
               'post_type'      => $postType,
               'post_date'      => $post_date,
               'post_date_gmt'  => $post_date_gmt,
             );  
 
+            if(empty($post_id)){
+                $post_id = $this->getPostIdFromName($post_name);
+            }
+
+            $bookeasyStatus = in_array(intval($operatorId), $this->visibleOperators) ? 'publish' : 'draft';
+
             // Does this operator id exist already?
             if(!empty($post_id)){
 
-                $post = array_merge($post, array('ID' => $post_id));
+                $post['ID'] =  $post_id;
 
                 $currentModDates = array(
                     'ImagesModDate' => get_post_meta($post_id, $this->postmetaPrefix . '_' . 'ImagesModDate', true),
@@ -346,12 +369,16 @@ class BookeasyOperators_Import extends Bookeasy{
 
                 $post['post_status'] = $this->getPostStatus($post_id);
                 $pt = strtotime($post_date);
-                if($post['post_status'] == 'future' && $pt <= time()){
-                    $post['post_status'] = 'publish';
+
+                //make sure you alway default to bookeasy status, not the wordpress status
+                if($post['post_status'] == 'publish'){
+                    $post['post_status'] = $bookeasyStatus;
+                } else if($post['post_status'] == 'future' && $pt <= time()){
+                    $post['post_status'] = $bookeasyStatus;
                 }
 
             } else {
-                $post['post_status'] = in_array(intval($operatorId), $this->visibleOperators) ? 'publish' : 'draft';
+                $post['post_status'] = $bookeasyStatus;
             }
             
             if(empty($currentModDates['DetailsModDate']) || 
@@ -369,20 +396,21 @@ class BookeasyOperators_Import extends Bookeasy{
                 $inserted_id = $post_id;
             }
             
-
             $currentImages = $this->rawOptionValue($inserted_id, $this->postmetaPrefix . '_Pictures');
 
             /**
              * Process images
              */
             
-            if(!empty($modDates[$operatorId]['ImagesModDate']) || 
+            if(!empty($modDates[$operatorId]['DetailsModDate']) || 
+                !empty($modDates[$operatorId]['ImagesModDate']) || 
                 (empty($currentImages) && !empty($op['Pictures'])) || 
                 $forced
                 ){
 
                 if(empty($currentModDates['ImagesModDate']) || 
                     $modDates[$operatorId]['ImagesModDate'] != $currentModDates['ImagesModDate'] || 
+                    $modDates[$operatorId]['DetailsModDate'] != $currentModDates['DetailsModDate'] || 
                     $forced){
                     
                     if(!empty($op['Pictures']) && 
@@ -413,7 +441,7 @@ class BookeasyOperators_Import extends Bookeasy{
                                 }
                                 
                                 
-                                $ch = curl_init('http:'.$dir . '/' . $dlname);
+                                $ch = curl_init('https:'.$dir . '/' . $dlname);
                                 $fp = fopen($wp_upload_dir['path'] .'/'.$name, 'wb');
                                 curl_setopt($ch, CURLOPT_FILE, $fp);
                                 curl_setopt($ch, CURLOPT_HEADER, 0);
@@ -475,6 +503,7 @@ class BookeasyOperators_Import extends Bookeasy{
                                 
                                 $imageCount++;
 
+                            update_post_meta($inserted_id, $this->postmetaPrefix . '_ImagesModDate', $modDates[$operatorId]['ImagesModDate']);
                         }
 
                     }
@@ -496,22 +525,28 @@ class BookeasyOperators_Import extends Bookeasy{
                 
                 // Save the updated dates to the database
                 $cats = array();
+
+                foreach($this->defaultMeta as $key){
+                    if(!isset($op[$key])){
+                        $op[$key] = '';
+                    }
+                }
+
                 foreach($op as $opKey => $opItem){
                     if(in_array($opKey, $this->postFields)){
                         continue;
                     }
                     
-                    // $message .= print_r($opItem, true);
                     $key = $opKey . '|' . $opItem;
                      if(isset($this->catMapping[$key]) && !empty($this->catMapping[$key])){
-                    //     $message .= print_r($key, true) . "\n\n";
-                    //     $message .= $this->catMapping[$key] . "\n\n";
                          $cats[] = intval($this->catMapping[$key]);
                     }
     
                     update_post_meta($inserted_id, $this->postmetaPrefix . '_' . $opKey, $opItem);
-                    
                 }
+
+                update_post_meta($inserted_id, $this->postmetaPrefix . '_DetailsModDate', $modDates[$operatorId]['DetailsModDate']);
+                
     
                 //set the cats if we need to
                 if(!empty($cats)){
@@ -519,21 +554,21 @@ class BookeasyOperators_Import extends Bookeasy{
                      wp_set_object_terms($inserted_id, $cats, $category, true);
                 }
 
+
+
+
             }
 
-            // Cache refresh for operator
-            if (function_exists('w3tc_pgcache_flush_post')){
-                if (!empty($post_id) ) {
-                    w3tc_pgcache_flush_post($post_id);
-                }
-            }
         }
 
         $this->modDates($modDates);
 
         $this->roomDetail($onlySync, $toLoad);
         $this->extraAccom($onlySync, $toLoad);
+
         $this->date($onlySync);
+
+        list($unpublished_count, $operatorsUnpublished) = $this->unpublish($onlySync);
         
         $endTime =  date('d/m/Y h:i:s a', time());
 
@@ -541,10 +576,12 @@ class BookeasyOperators_Import extends Bookeasy{
         $message[] = "The bookeasy sync for " . get_bloginfo('name' ) . " has finished".PHP_EOL;
         $message[] = "Created: " . $create_count;
         $message[] = "Updated: " . $update_count;
+        $message[] = "Unpublished: " . $unpublished_count;
         $message[] = "Operator Images Updates: " . $image_update_count;
         $message[] = "Start Time: " . $startedTime;
         $message[] = "Operators Created: " . implode(',', $operatorsCreated); 
         $message[] = "Operators Updated: " . implode(',', $operatorsUpdated);   
+        $message[] = "Operators Unpublished: " . implode(',', $operatorsUnpublished);   
 
         if(is_null($onlySync) && !empty($this->options['notificaton_email'])){
             $emails = $this->options['notificaton_email'];
@@ -563,6 +600,7 @@ class BookeasyOperators_Import extends Bookeasy{
         $json = array();
         $json['created'] = $create_count;
         $json['updated'] = $update_count;
+        $json['unpublished'] = $unpublished_count;
         $json['updated_images'] = $image_update_count;
         $json['start_time'] = $startedTime;
         $json['end_time'] = $endTime;
@@ -573,6 +611,69 @@ class BookeasyOperators_Import extends Bookeasy{
 
         return json_encode($json);
 
+    }
+
+    public function unpublish($onlySync = null){
+
+        $this->load();
+
+        $unplublished = 0;
+        $currentOperators = array();
+        $activeOperators = array();
+
+        if(is_null($onlySync)){
+
+            $query = new WP_Query(array(
+                'post_type' => $this->options['posttype'],
+                'post_status' => 'publish',
+                'posts_per_page' => '-1',
+            ));
+            $posts = $query->get_posts();
+
+            foreach( $posts as $post ) { 
+                $currentOperators[] = $this->rawOptionValue($post->ID, $this->postmetaPrefix . '_OperatorID');
+            }
+
+        } elseif(is_array($onlySync)) {
+            $currentOperators = $onlySync;
+        } else {
+            return $unplublished;
+        }
+
+        $id = $this->options['vc_id'];
+
+        // Mod dates
+        $url = BOOKEASY_ENDPOINT . BOOKEASY_MODDATES;
+        $url = str_replace('[vc_id]', $id, $url);
+
+        // create the url and fetch the stuff
+        $json = file_get_contents($url);
+        $arr = json_decode($json, true);
+
+        $modDates = array();
+        if(!isset($arr['Items']) || !is_array($arr['Items'])){
+            return $this->sendFailed('Url/Json Fail : Mod Dates unpublish', $onlySync);
+        }
+
+        foreach($arr['Items'] as $mod){
+            $activeOperators[] = $mod['OperatorId'];
+        }
+
+        //print_r($currentOperators);
+        //print_r($activeOperators);
+
+        $toUnpublish = array_diff($currentOperators, $activeOperators);
+
+        if(!empty($toUnpublish)){
+            foreach ($toUnpublish as $operatorid) {
+                $postId = $this->getPostId($operatorid);
+                $this->markDraft($postId);
+
+                $unplublished++;
+            }
+        }
+
+        return array($unplublished, $toUnpublish);
     }
 
     public function sendFailed($reason, $onlySync = null){
@@ -662,7 +763,7 @@ class BookeasyOperators_Import extends Bookeasy{
         if(!empty($arr)){
             foreach($arr as $op){
                 $post_id = $this->getPostId($op['OperatorID']);
-                if(empty($post_id)){
+                if(!empty($post_id)){
                     update_post_meta($post_id, $this->postmetaPrefix . '_ShortDetails', $op);
                 }
             }
@@ -840,16 +941,46 @@ class BookeasyOperators_Import extends Bookeasy{
 
         global $wpdb;
 
+        $postMeta_query ="SELECT p.ID 
+        FROM $wpdb->postmeta pm 
+        JOIN $wpdb->posts p ON pm.post_id = p.ID 
+        WHERE pm.meta_key = %s 
+        AND pm.meta_value = %d 
+        AND p.post_type = %s 
+        ORDER BY p.ID ASC";
+
+        return $wpdb->get_var(
+            $wpdb->prepare(
+                $postMeta_query, 
+                $this->postmetaPrefix . '_OperatorID', 
+                $operatorId,
+                $this->options['posttype']
+            )
+        );
+    }
+
+    /**
+     * [getPostId description]
+     * @param  [type] $operatorId [description]
+     * @return [type]             [description]
+     */
+    public function getPostIdFromName($name){
+
+        global $wpdb;
+
         $postMeta_query ="SELECT ID 
-        FROM wp_postmeta pm 
-        JOIN wp_posts p ON pm.post_id = p.ID 
-        WHERE meta_key = %s 
-        AND meta_value = %d 
-        ORDER BY post_date DESC";
+        FROM $wpdb->posts 
+        WHERE post_name = %s 
+        AND post_type = %s 
+        ORDER BY ID ASC";
 
-        return $wpdb->get_var($wpdb->prepare($postMeta_query, $this->postmetaPrefix . '_OperatorID', $operatorId));
-
-        //return $wpdb->get_var($wpdb->prepare("SELECT ID FROM $wpdb->posts WHERE ID = %d", $postMeta_postId));
+        return $wpdb->get_var(
+            $wpdb->prepare(
+                $postMeta_query, 
+                $name, 
+                $this->options['posttype']
+            )
+        );
 
     }
 
@@ -873,6 +1004,11 @@ class BookeasyOperators_Import extends Bookeasy{
         return $wpdb->get_var($wpdb->prepare($post_query, $post_id, $key));
 
 
+    }
+
+
+    public function log($txt = ''){
+        //error_log($txt);
     }
 
 }

@@ -11,11 +11,11 @@ Author URI: http://www.nigelheap.com
 define('BOOKEASY_PLUGIN', 'bookeasy');
 define('BOOKEASY_ENDPOINT', 'https://sjp.impartmedia.com');
 define('BOOKEASY_VISIBLEOPERATORS', '/V1.1/be/getVcOperatorIds?q=[vc_id]');
-define('BOOKEASY_OPERATORINFO', '/be/getOperatorsInformation?q=[vc_id]');
-define('BOOKEASY_OPERATORDETAILSSHORT', '/be/getOperatorsDetailsShort?q=[vc_id]&operators=[operators_id]');
-define('BOOKEASY_ACCOMROOMSDETAILS', '/be/getAccomRoomsDetails?q=[vc_id]&operators=[operators_id]');
-define('BOOKEASY_OPERATORDETAILSSHORT_ALL', '/be/getOperatorsDetailsShort?q=[vc_id]');
-define('BOOKEASY_ACCOMROOMSDETAILS_ALL', '/be/getAccomRoomsDetails?q=[vc_id]');
+define('BOOKEASY_OPERATORINFO', '/V1.1/be/getOperatorsInformation?q=[vc_id]');
+define('BOOKEASY_OPERATORDETAILSSHORT', '/V1.1/be/getOperatorsDetailsShort?q=[vc_id]&operators=[operators_id]');
+define('BOOKEASY_ACCOMROOMSDETAILS', '/V1.1/be/getAccomRoomsDetails?q=[vc_id]&operators=[operators_id]');
+define('BOOKEASY_OPERATORDETAILSSHORT_ALL', '/V1.1/be/getOperatorsDetailsShort?q=[vc_id]');
+define('BOOKEASY_ACCOMROOMSDETAILS_ALL', '/V1.1/be/getAccomRoomsDetails?q=[vc_id]');
 define('BOOKEASY_MODDATES', '/V1.1/be/getOperatorModDates?q=[vc_id]');
 
 require_once 'includes/base.php';

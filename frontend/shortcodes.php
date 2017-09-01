@@ -40,9 +40,7 @@ class Bookeasy_ShortCodes extends Bookeasy {
     public function horizontal_search($atts = array()){
         $this->load();
 
-        if(empty($atts)){
-            $atts = array();
-        }
+        $atts = !empty($atts) ? $atts : array();
         
         $defaults = array(
             'tours' => true, 
@@ -60,6 +58,8 @@ class Bookeasy_ShortCodes extends Bookeasy {
 
     public function rooms($atts = array()){
         $this->load();
+        
+        $atts = !empty($atts) ? $atts : array();
         
         $defaults = array(
             'type' => 'accom',
@@ -79,6 +79,8 @@ class Bookeasy_ShortCodes extends Bookeasy {
     public function single($atts = array()){
         $this->load();
         
+        $atts = !empty($atts) ? $atts : array();
+        
         $defaults = array(
             'type' => 'accom',
             'operatorID' => 0,
@@ -97,10 +99,15 @@ class Bookeasy_ShortCodes extends Bookeasy {
 
     public function confirm($atts = array()){
         $this->load();
+        
+        $atts = !empty($atts) ? $atts : array();
+        $defaults = array();
+        
+        $data = array_merge($defaults, $this->options, $atts);
 
         $return = '';
         $return .= $this->script();
-        $return .= BookEasy_Template::get('templates/confirm', $this->options);
+        $return .= BookEasy_Template::get('templates/confirm', $data);
 
         return $return;
     } 
@@ -108,10 +115,15 @@ class Bookeasy_ShortCodes extends Bookeasy {
 
     public function results($atts = array()){
         $this->load();
+        
+        $atts = !empty($atts) ? $atts : array();
+        $defaults = array();
+        
+        $data = array_merge($defaults, $this->options, $atts);
 
         $return = '';
         $return .= $this->script();
-        $return .= BookEasy_Template::get('templates/results', $this->options);
+        $return .= BookEasy_Template::get('templates/results', $data);
 
         return $return;
     }   
@@ -119,10 +131,15 @@ class Bookeasy_ShortCodes extends Bookeasy {
 
     public function tour_results($atts = array()){
         $this->load();
+        
+        $atts = !empty($atts) ? $atts : array();
+        $defaults = array();
+        
+        $data = array_merge($defaults, $this->options, $atts);
 
         $return = '';
         $return .= $this->script();
-        $return .= BookEasy_Template::get('templates/tour-results', $this->options);
+        $return .= BookEasy_Template::get('templates/tour-results', $data);
 
         return $return;
        
@@ -130,10 +147,15 @@ class Bookeasy_ShortCodes extends Bookeasy {
 
     public function book($atts = array()){
         $this->load();
+        
+        $atts = !empty($atts) ? $atts : array();
+        $defaults = array();
+        
+        $data = array_merge($defaults, $this->options, $atts);
 
         $return = '';
         $return .= $this->script();
-        $return .= BookEasy_Template::get('templates/book', $this->options);
+        $return .= BookEasy_Template::get('templates/book', $data);
 
         return $return;
     }
@@ -141,9 +163,7 @@ class Bookeasy_ShortCodes extends Bookeasy {
     public function cart($atts = array()){
         $this->load();
 
-        if(empty($atts)){
-            $atts = array();
-        }
+        $atts = !empty($atts) ? $atts : array();
         
         $defaults = array(
             'cart_id' => 'toolbar-cart',

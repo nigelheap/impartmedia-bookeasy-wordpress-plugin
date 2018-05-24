@@ -25,8 +25,8 @@
     if ( campaignID != "") currentNights=2; // force two nights for campaigns
     // reassign default BE cookie when browsing between areas
     var currentCookieObject = $w.json.parse($w.cookie(BE.util.cookieName()));
-    var currentNights = "2";
-    var currentAdults = "2";
+    var currentNights = "1";
+    var currentAdults = "1";
 
     if ( currentCookieObject != null && currentCookieObject.product != "accom" ) {
 
@@ -49,14 +49,14 @@
             BE.gadget.details("#itemGadget",{
                 vcID:<?php echo $vc_id ?>,
                 type:"<?php echo $type; ?>",
-                productID:<?php echo $operatorid; ?>
+                productID:<?php echo $operator_id; ?>
                 ,campaignID: campaignID
             });
         } else {
             BE.gadget.details("#itemGadget",{
                 vcID:<?php echo $vc_id ?>,
                 type:"<?php echo $type; ?>",
-                productID:<?php echo $operatorid; ?>
+                productID:<?php echo $operator_id; ?>
             });
         }
 

@@ -1,11 +1,16 @@
+
 <div id="regionGadget"></div>
 <script type="text/javascript">
 $w(function() {
-    BE.gadget.region("#regionGadget",{
+    BE.gadget.region("#regionGadget",{ 
         vcID:<?php echo $vc_id ?>,
-        period:"3",
-        adults:"2",
-        showAllAccom:false,
+        period:"<?php echo $period ?>",
+        adults:"<?php echo $adults ?>",
+        <?php if(!empty($force_accom_type)): ?>forceAccomType: "<?php echo $force_accom_type; ?>",<?php endif; ?>
+
+        <?php if(!empty($limit_locations) && is_array($limit_locations)): ?>limitLocations : <?php echo json_encode($limit_locations); ?>,<?php endif; ?>
+        <?php if(!empty($default_region_loc)): ?>defaultRegionLoc : "<?php echo $default_region_loc; ?>",<?php endif; ?>
+        showAllAccom:true,
         listAllMode:false,
         showMap:true,
         showLegend:false,
@@ -15,17 +20,30 @@ $w(function() {
         collapseRefineTools:true,
         showLocationFilter:true,
         ignoreSearchCookie:false,
-        itemDetailPageURL:"/book/{url}",
+        itemDetailPageURL:"/members/{url}",
         scriptCustomURLs:"/accommodation/script/customurls",
-        vcLocations:[{"name":"Albany Visitor Centre","lat":-35.02795,"lng":117.88597}],
-        enableRegionSearch:false
+        enableRegionSearch:false,
+	    disabledTypes:["events", "carhire", "packages", "tours"]
     });
+    jQuery('head link[href="//gadgets.impartmedia.com/css/all.cssz"]').remove();
+
+
 });
 </script>
+<?php echo BookEasy_Template::get('templates/_results_adjustments'); ?>
+<?php echo BookEasy_Template::get('templates/_platinum_partners', array(
+    'platinum_partners_limit' => $platinum_partners_limit,
+    'platinum_partners_term' => 'accommodation',
+    'platinum_partners_taxonomy' => $taxonomy,
+)); ?>
+<?php echo BookEasy_Template::get('templates/_hide_operators'); ?>
+<?php echo BookEasy_Template::get('templates/_force_view'); ?>
+
   <script type="text/javascript">
 
     var $checkCartInterval = 0;
     var $tripPlannerHoverTimeout = 0;
+ 
     
     $w(function() {
         BE.gadget.cart("#toolbar-cart", {
@@ -39,6 +57,7 @@ $w(function() {
         jQuery(".link-tripplanner-hover").hover(function() { showTripPlannerPopout(this); }, function() { hideTripPlannerPopout(); });
         jQuery("#shopping-cart-link").hover(function() { jQuery(this).click(); }, function() { });
     });
+
     function addToTripPlanner($url) {
         jQuery.get($url, function($numberItems) {
             jQuery("#toolbar-tripplanner a").text(parseInt($numberItems));
@@ -49,6 +68,7 @@ $w(function() {
             }
         });
     }
+
     function removeFromTripPlanner($url, $obj) {
         jQuery.get($url, function($numberItems) {
             jQuery("#toolbar-tripplanner a").text(parseInt($numberItems));
@@ -60,6 +80,7 @@ $w(function() {
             }
         });
     }
+
     function showTripPlannerPopout(obj) {
         if (jQuery(".toolbar-hover-popout").size() > 0) {
             jQuery(".toolbar-hover-popout").stop();
@@ -73,6 +94,7 @@ $w(function() {
             });
         }
     }
+
     function hideTripPlannerPopout() {
         jQuery(".toolbar-hover-popout").stop();
         jQuery(".toolbar-hover-popout").fadeTo(400, 0.0, function() {

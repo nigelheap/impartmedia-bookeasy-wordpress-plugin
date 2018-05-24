@@ -172,17 +172,16 @@ class BookeasyOperators_Import extends Bookeasy{
 
         $this->load();
         
-        set_time_limit(1800);
         global $wpdb;
         
-        //date_default_timezone_set(get_option('timezone_string'));
-
         $startedTime =  date('d/m/Y h:i:s a', time());
         
         $message = '';
 
     
         $this->log(print_r(ini_get('memory_limit'), true));
+        $this->log(print_r(ini_get('max_execution_time'), true));
+        $this->log(print_r(ini_get('max_input_time'), true));
 
         $this->options = get_option($this->optionGroup);
         $this->catMapping = get_option($this->optionGroupCategories);
@@ -193,58 +192,89 @@ class BookeasyOperators_Import extends Bookeasy{
 
         $toLoad = null;
 
-        if(!$onlySync){
 
-            // Mod dates
-            $url = BOOKEASY_ENDPOINT . BOOKEASY_MODDATES;
-            $url = str_replace('[vc_id]', $id, $url);
+        // Mod dates
+        $url = BOOKEASY_ENDPOINT . BOOKEASY_MODDATES;
+        $url = str_replace('[vc_id]', $id, $url);
 
-            // create the url and fetch the stuff
-            $json = file_get_contents($url);
-            $arr = json_decode($json, true);
+        // create the url and fetch the stuff
+        $json = file_get_contents($url);
+        $arr = json_decode($json, true);
 
-            $modDates = array();
-            if(!isset($arr['Items']) || !is_array($arr['Items'])){
-                return $this->sendFailed('Url/Json Fail : Mod Dates', $onlySync);
+        $modDates = array();
+        if(!isset($arr['Items']) || !is_array($arr['Items'])){
+            return $this->sendFailed('Url/Json Fail : Mod Dates', $onlySync);
+        }
+
+        $toLoad = array();
+        foreach($arr['Items'] as $mod){
+
+            if(!empty($onlySync) && !in_array($mod['OperatorId'], $onlySync)){
+                continue;
             }
 
-            $toLoad = array();
-            foreach($arr['Items'] as $mod){
-                $post_id = $this->getPostId($mod['OperatorId']);
+            $post_id = $this->getPostId($mod['OperatorId']);
 
-                if(!empty($post_id)){
+            if(!empty($post_id)){
 
-                    $currentModDates = array(
-                        'ImagesModDate' => get_post_meta($post_id, $this->postmetaPrefix . '_' . 'ImagesModDate', true),
-                        'DetailsModDate' => get_post_meta($post_id, $this->postmetaPrefix . '_' . 'DetailsModDate', true),
-                    );
+                $currentModDates = array(
+                    'ImagesModDate' => get_post_meta($post_id, $this->postmetaPrefix . '_' . 'ImagesModDate', true),
+                    'DetailsModDate' => get_post_meta($post_id, $this->postmetaPrefix . '_' . 'DetailsModDate', true),
+                );
 
-                    $currentImages = $this->rawOptionValue($post_id, $this->postmetaPrefix . '_Pictures');
+                $currentImages = $this->rawOptionValue($post_id, $this->postmetaPrefix . '_Pictures');
 
-                    //$this->log(print_r(array($currentModDates, $mod), true));
+                //$this->log(print_r(array($currentModDates, $mod), true));
 
-                    // update imaged based on DetailsModDate
-                    if(empty($currentModDates['DetailsModDate']) || $mod['DetailsModDate'] != $currentModDates['DetailsModDate']){
+                $detailsMatch = ($mod['DetailsModDate'] == $currentModDates['DetailsModDate']);
+                $imagesMatch = ($mod['ImagesModDate'] == $currentModDates['ImagesModDate']);
+
+
+                if(!$detailsMatch){
+
+                    if(empty($currentModDates['DetailsModDate'])){
+                        $toLoad[] = $mod['OperatorId'];
+                    } 
+
+                    if($mod['DetailsModDate'] != $currentModDates['DetailsModDate']){
                         $toLoad[] = $mod['OperatorId'];
                     }
 
-                    // Include images to update ImagesModDate
-                    if(!empty($mod['ImagesModDate']) || empty($currentImages)){
-                        if(empty($currentModDates['ImagesModDate']) || $mod['ImagesModDate'] != $currentModDates['ImagesModDate']){
-                            $toLoad[] = $mod['OperatorId'];
-                        }
-                    }
-
-                } else {
-                    $toLoad[] = $mod['OperatorId'];
                 }
 
-                $modDates[$mod['OperatorId']] = $mod;
+                if(!$imagesMatch){
+
+                    if(empty($currentModDates['ImagesModDate'])){
+                        $toLoad[] = $mod['OperatorId'];
+                    }
+
+                    if(empty($currentImages)){
+                        $toLoad[] = $mod['OperatorId'];
+                    }
+
+                    if($mod['ImagesModDate'] != $currentModDates['ImagesModDate']){
+                        $toLoad[] = $mod['OperatorId'];
+                    }
+                }
+
+
+            } else {
+                $toLoad[] = $mod['OperatorId'];
             }
+
+            $modDates[$mod['OperatorId']] = $mod;
         }
 
+        if($onlySync && is_array($onlySync)){
+            $toLoad = $onlySync;
+        }
+
+        $toLoad = array_unique($toLoad);
 
         $this->log(print_r(array('toLoad' => count($toLoad)), true));
+        $this->log(print_r(array('toLoad' => $toLoad), true));
+
+        //$this->sendEmail(count($toLoad) . ' items to sync ', $onlySync);
 
         //Operators info
         $url = BOOKEASY_ENDPOINT . BOOKEASY_OPERATORINFO;
@@ -258,43 +288,33 @@ class BookeasyOperators_Import extends Bookeasy{
 
         $url = str_replace('[vc_id]', $id, $url);
 
-        if($onlySync && is_array($onlySync)){
-            $url .= '&operators='.implode(',', $onlySync);
+
+        if(empty($toLoad)){
+            $this->log('Nothing to sync', true);
         }
 
+        $base = $url;
+        $chunks = array_chunk($toLoad, 20);
 
-        if(!empty($toLoad)){
-            $base = $url;
-            $toLoad = array_unique($toLoad);
-            $chunks = array_chunk($toLoad, 20);
+        $arr = array();
+        $arr['Operators'] = array();
 
-            $arr = array();
-            $arr['Operators'] = array();
-
-            foreach($chunks as $chunk){
-                $load = $base . '&operators=' . implode(',', $chunk);
+        foreach($chunks as $chunk){
+            $load = $base . '&operators=' . implode(',', $chunk);
 
 
-                // create the url and fetch the stuff
-                $json = file_get_contents($load);
-                $result = json_decode($json, true);
-
-                if(!isset($result['Operators']) || !is_array($result['Operators'])){
-                    return $this->sendFailed('Url/Json Fail : Operators Chunk');
-                } else {
-                    $arr['Operators'] = array_merge($arr['Operators'], $result['Operators']);
-                }
-            }
-            
-        } else {
             // create the url and fetch the stuff
-            $json = file_get_contents($url);
-            $arr = json_decode($json, true);
-        
-            if(!isset($arr['Operators']) || !is_array($arr['Operators'])){
-                return $this->sendFailed('Url/Json Fail : Operators', $onlySync);
+            $json = file_get_contents($load);
+            $result = json_decode($json, true);
+
+            if(!isset($result['Operators']) || !is_array($result['Operators'])){
+                return $this->sendFailed('Url/Json Fail : Operators Chunk');
+            } else {
+                $arr['Operators'] = array_merge($arr['Operators'], $result['Operators']);
             }
         }
+            
+    
 
         // Get the path to the upload directory.
         $wp_upload_dir = wp_upload_dir();
@@ -339,10 +359,15 @@ class BookeasyOperators_Import extends Bookeasy{
             
             $post_title = $op[$this->postFields['post_title']];
             $post_name = sanitize_title($post_title);
+
+            $post_content = $op[$this->postFields['post_content']];
+            if(empty($post_content)){
+                $post_content = $post_title;
+            }
             
             // Create the post array
             $post = array(
-              'post_content'   => $op[$this->postFields['post_content']],
+              'post_content'   => $post_content,
               'post_title'     => $post_title,
               'post_name'      => $post_name, 
               'post_type'      => $postType,
@@ -389,7 +414,7 @@ class BookeasyOperators_Import extends Bookeasy{
     
                 // something happed??
                 if( is_wp_error( $inserted_id ) ) {
-                    return $return->get_error_message();
+                    return $inserted_id->get_error_message();
                 }
 
             } elseif(!empty($post_id)) {
@@ -445,6 +470,7 @@ class BookeasyOperators_Import extends Bookeasy{
                                 $fp = fopen($wp_upload_dir['path'] .'/'.$name, 'wb');
                                 curl_setopt($ch, CURLOPT_FILE, $fp);
                                 curl_setopt($ch, CURLOPT_HEADER, 0);
+                                curl_setopt($ch, CURLOPT_USERAGENT,'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13');
                                 curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
                                 curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
                                 curl_exec($ch);
@@ -479,7 +505,7 @@ class BookeasyOperators_Import extends Bookeasy{
                                     'guid'           => $wp_upload_dir['url'] . '/' . basename( $filename ), 
                                     'post_mime_type' => $filetype['type'],
                                     'post_title'     => preg_replace( '/\.[^.]+$/', '', basename( $filename ) ),
-                                    'post_content'   => '',
+                                    'post_content'   => $post_title,
                                     'post_status'    => 'inherit'
                                 );
 
@@ -555,6 +581,11 @@ class BookeasyOperators_Import extends Bookeasy{
                 }
 
 
+                if(empty($onlySync)){
+                    echo "post_id: " . $inserted_id . ' ';
+                    echo "operator_id: " . $operatorId . ' ';
+                    echo "images updated: " . $imageCount . ' ';
+                }
 
 
             }
@@ -567,6 +598,9 @@ class BookeasyOperators_Import extends Bookeasy{
         $this->extraAccom($onlySync, $toLoad);
 
         $this->date($onlySync);
+
+        //$this->prices($onlySync, $toLoad);
+        $this->prices($onlySync);
 
         list($unpublished_count, $operatorsUnpublished) = $this->unpublish($onlySync);
         
@@ -612,6 +646,31 @@ class BookeasyOperators_Import extends Bookeasy{
         return json_encode($json);
 
     }
+
+    public function sendEmail($message = '', $onlySync = null){
+        $this->load();
+
+        $message = array($message);
+        $message[] = "Time: " . date('d/m/Y h:i:s a', time());
+
+        if(is_null($onlySync) && !empty($this->options['notificaton_email'])){
+            $emails = $this->options['notificaton_email'];
+            if(strstr($this->options['notificaton_email'], ',')){
+                $emails = explode(',', $this->options['notificaton_email']);
+            }
+
+            wp_mail(
+                $emails, 
+                get_bloginfo('name' ) . ' Bookeasy notification', 
+                implode(PHP_EOL, $message)
+            );
+
+        }
+
+        return $message;
+
+    }
+
 
     public function unpublish($onlySync = null){
 
@@ -691,7 +750,7 @@ class BookeasyOperators_Import extends Bookeasy{
 
             wp_mail(
                 $emails, 
-                get_bloginfo('name' ) . ' Bookeasy sync finished', 
+                get_bloginfo('name' ) . ' Bookeasy sync failed', 
                 implode(PHP_EOL, $message)
             );
 
@@ -730,7 +789,7 @@ class BookeasyOperators_Import extends Bookeasy{
         $this->load();
         $id = $this->options['vc_id'];
 
-        $url = BOOKEASY_ENDPOINT . BOOKEASY_OPERATORDETAILSSHORT_ALL;
+        $url = BOOKEASY_ENDPOINT . BOOKEASY_ACCOMRATES;
         $url = str_replace('[vc_id]', $id, $url);
 
         if(!empty($toLoad)){
@@ -751,7 +810,7 @@ class BookeasyOperators_Import extends Bookeasy{
                     $arr = array_merge($arr, $result);
                 }
             }
-            
+
         } elseif($onlySync && is_array($onlySync)){
             $url .= '&operators='.implode(',', $onlySync);
             // create the url and fetch the stuff
@@ -765,6 +824,58 @@ class BookeasyOperators_Import extends Bookeasy{
                 $post_id = $this->getPostId($op['OperatorID']);
                 if(!empty($post_id)){
                     update_post_meta($post_id, $this->postmetaPrefix . '_ShortDetails', $op);
+                }
+            }
+        }
+
+    }
+
+
+    /**
+     * Extra accom details
+     */
+    public function prices($onlySync = null, $toLoad = null){
+
+        $this->load();
+        $id = $this->options['vc_id'];
+
+        $url = BOOKEASY_ENDPOINT . BOOKEASY_OPERATORDETAILSSHORT_ALL;
+        $url = str_replace('[vc_id]', $id, $url);
+        $url .= '&date='. date('Y-m-d', strtotime('+1 Month'));
+        $url .= '&period=1';
+
+        if(!empty($toLoad)){
+            $base = $url;
+            $chunks = array_chunk($toLoad, 30);
+
+            $arr = array();
+            foreach($chunks as $chunk){
+                $load = $base . '&operators=' . implode(',', $chunk);
+
+                // create the url and fetch the stuff
+                $json = file_get_contents($load);
+                $result = json_decode($json, true);
+
+                if(!isset($result) || !is_array($result)){
+                    return $this->sendFailed('Url/Json Fail : Prices Chunk');
+                } else {
+                    $arr = array_merge($arr, $result);
+                }
+            }
+            
+        } elseif($onlySync && is_array($onlySync)){
+            $url .= '&operators='.implode(',', $onlySync);
+            // create the url and fetch the stuff
+            $json = file_get_contents($url);
+            $arr = json_decode($json, true);
+        }
+
+
+        if(!empty($arr)){
+            foreach($arr as $op){
+                $post_id = $this->getPostId($op['OperatorID']);
+                if(!empty($post_id)){
+                    update_post_meta($post_id, $this->postmetaPrefix . '_Prices', $op);
                 }
             }
         }
@@ -1008,7 +1119,8 @@ class BookeasyOperators_Import extends Bookeasy{
 
 
     public function log($txt = ''){
-        //error_log($txt);
+        error_log($txt);
+        //file_put_contents(dirname(__FILE__) . '/../bookeasy-logs.txt', $txt.PHP_EOL , FILE_APPEND);
     }
 
 }

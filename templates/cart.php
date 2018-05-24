@@ -10,10 +10,10 @@
         BE.gadget.cart("#toolbar-cart", {
             vcID:<?php echo $vc_id ?>,
             bookingURL:"<?php echo $bookingurl ?>",
-            autoCollapse:true
+            autoCollapse:true,
+            showBookingTimer: true
         });
-
-        
+        jQuery('head link[href="//gadgets.impartmedia.com/css/all.cssz"]').remove();
     });
 
     jQuery(document).ready(function() {

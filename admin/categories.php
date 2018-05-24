@@ -14,6 +14,8 @@ class BookeasyOperators_Categories
     public $optionGroupSync = 'BookeasyOperators_categoriessync';
     public $optionGroupSettings = 'BookeasyOperators_options';
 
+    public $version = '1.0.3';
+
     /**
      * Start up
      */
@@ -51,8 +53,8 @@ class BookeasyOperators_Categories
         $this->settingsOptionsSync = get_option($this->optionGroupSync);
 
         // Add our CSS Styling
-        wp_enqueue_style( 'bookeasy-options', plugins_url('../css/bookeasy-options.css', __FILE__) );
-        wp_enqueue_script( 'bookeasy-options', plugins_url('../js/bookeasy-options.js', __FILE__) );
+        wp_enqueue_style( 'bookeasy-options', plugins_url('../css/bookeasy-options.css', __FILE__) , array(), $this->version);
+        wp_enqueue_script( 'bookeasy-options', plugins_url('../js/bookeasy-options.js', __FILE__) , array(), $this->version);
         ?>
         <div class="wrap">
             <?php screen_icon(); ?>

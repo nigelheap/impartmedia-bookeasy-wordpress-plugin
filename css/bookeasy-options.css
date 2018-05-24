@@ -1,11 +1,11 @@
 
 
-.custom-form{
+.custom-form-bookeasy{
     margin-bottom: 10px;
      clear: both;
 }
 
-.custom-form h3{
+.custom-form-bookeasy h3{
     position: relative;
     margin-bottom: 20px;
     margin-left: -12px;
@@ -13,20 +13,15 @@
     padding: 5px 12px;
 }
 
-.custom-form .inside{
-    margin: 0;
-}
-
-.custom-form p.description{
+.custom-form-bookeasy p.description{
     padding-bottom: 0;
 }
 
-
-.custom-form input[type=text]{
+.custom-form-bookeasy input[type=text]{
     width: 500px;
 }
 
-.custom-form textarea{
+.custom-form-bookeasy textarea{
     font-size: 12px;
 }
 

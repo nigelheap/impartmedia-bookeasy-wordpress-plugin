@@ -1,97 +1,20 @@
-<?php
-    $specific_tours_list = array();
-    if(!empty($specific_tours)){
-        $specific_tours_list = explode(',', $specific_tours);
-    }
-?>
-<div class="booking-widget">
-    <!-- ======================================================================
-    == ITEM GADGET
-    ====================================================================== -->
-    <div id="itemGadget" class=""></div>
-    <!-- /ITEM GADGET -->
+<div class="row">
+    <div class="col span_2">
+        <hr style="border: 0;">&nbsp;
+    </div>
+    <div class="col span_7 booking-widget">
+        <!-- ======================================================================
+        == ITEM GADGET
+        ====================================================================== -->
+        <div id="itemGadget" class=""></div>
+        <!-- /ITEM GADGET -->
+    </div>
+    <div class="col span_3">
+        &nbsp;
+    </div>
 </div>
+
 <script type="text/javascript">
-
-      if (!String.prototype.startsWith) {
-        String.prototype.startsWith = function(search, pos) {
-          return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
-        };
-      }
-
-    <?php if(!empty($specific_tours_list)): ?>
-
-    window.$toShow = <?php echo json_encode($specific_tours_list); ?>;
-
-    function showRows(){
-      var table = jQuery('.priceGrid table');
-      table.find('tr').hide();
-      for (var i = 0; i < $toShow.length; i++) {
-        table.find('.roomName').each(function(){
-          if(jQuery(this).html().toLowerCase().startsWith($toShow[i].toLowerCase())){
-              // Updated below to check for a smartphone, seems that smartphones need an extra parent
-            if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-                jQuery(this).parent().parent().parent().show();    
-            } else {
-                jQuery(this).parent().parent().show();
-            }
-            
-          }
-        })
-      }
-    }
-
-    function sortTable(){
-
-      var table = jQuery('.priceGrid table');
-      var switching = true;
-      var shouldSwitch = false;
-
-      table.find('tr').each(function(){
-        var cost = jQuery(this).find('.cost:eq(0)').text();
-        cost = cost.replace('$', '');
-
-        if(cost){
-          jQuery(this).data('cost', cost);
-        } else {
-          jQuery(this).data('cost', 1000);
-        }
-
-      });
-
-      while (switching) {
-        // Start by saying: no switching is done:
-        switching = false;
-        rows = table.find("tr");
-        /* Loop through all table rows (except the
-        first, which contains table headers): */
-        for (i = 1; i < (rows.length - 1); i++) {
-          // Start by saying there should be no switching:
-          shouldSwitch = false;
-          /* Get the two elements you want to compare,
-          one from current row and one from the next: */
-          x = jQuery(rows[i]).data('cost');
-          y = jQuery(rows[i + 1]).data('cost');
-          // Check if the two rows should switch place:
-
-          if (parseFloat(x) > parseFloat(y)) {
-            // If so, mark as a switch and break the loop:
-            shouldSwitch = true;
-            break;
-          }
-        }
-
-        if (shouldSwitch) {
-          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
-          switching = true;
-        }
-      }
-
-    }
-
-    <?php endif; ?>
-
-
 
     function removeHash () {
         history.pushState(
@@ -145,133 +68,29 @@
         });
     }
 
-    function getCampaignID() {
-
-        var windowHash = window.location.hash;
-        var count = windowHash.match(/\//g);
-        var $campaignID = "";
-
-        if (count != null && count.length == 3 ) {
-
-            var $hashValue = window.location.hash;
-            var $strLastPos = $hashValue.lastIndexOf("/")+1;
-            $campaignID = $hashValue.slice($strLastPos, $hashValue.length);
-        }
-        return $campaignID;
-    }
-    var campaignID =  getCampaignID();
-    if ( campaignID != "") currentNights=2; // force two nights for campaigns
-    // reassign default BE cookie when browsing between areas
-    var currentCookieObject = $w.json.parse($w.cookie(BE.util.cookieName()));
-    var currentNights = "1";
-    var currentAdults = "1";
-
-    if ( currentCookieObject != null && currentCookieObject.product != "accom" ) {
-
-        var tmpUserState = {
-            product:"accom",
-            period:currentNights,
-            adults:currentAdults,
-            children:"0",
-            infants:"0",
-            date:currentCookieObject.date
-        }
-
-        $w.cookie(BE.util.cookieName(),$w.json.stringify(tmpUserState));
-    }
-
     $w(function() {
 
+        removeHash();
 
-        <?php if(!empty($_GET['bookingdate'])): 
-            $newDate = strtotime($_GET['bookingdate']);
-        ?>
+        BE.gadget.details("#itemGadget",{
+            vcID:<?php echo $vc_id ?>,
+            type:"packages",
+            productID:"<?php echo $product_id ?>",
+            showAllPackages:true,
+        });
 
-            var currentCookieObject = $w.json.parse($w.cookie(BE.util.cookieName()));
+        jQuery('.infants, .concessions, .students, .observers, .family').wrapAll('<div class="concession-type"></div>');
+        jQuery(".children").after('<a id="show-concessions-link" style="cursor:pointer;">Show Concessions</a>');
+        jQuery('.concession-type').hide();
+        jQuery('.booking-widget').on('click', '#show-concessions-link', function() {
+          jQuery(this).next('.concession-type').toggle();
+          if (jQuery('.concession-type').is(':visible')) {
+            jQuery('#show-concessions-link').text('Hide Concessions');
+          } else {
+            jQuery('#show-concessions-link').text('Show Concessions');
+          }
 
-            var tmpUserState = {
-                product:currentCookieObject.product,
-                period:currentCookieObject.period,
-                adults:currentCookieObject.adults,
-                children:currentCookieObject.children,
-                infants:currentCookieObject.children,
-                date:"<?php echo date('D d/m/Y', $newDate); ?>"
-            }
-
-            $w.cookie(BE.util.cookieName(),$w.json.stringify(tmpUserState));
-        
-        <?php endif; ?>
-
-
-        // call the gadget with the correct campaign settings
-
-        if (campaignID != null && campaignID != "" ) {
-            BE.gadget.details("#itemGadget",{
-                vcID:<?php echo $vc_id ?>,
-                type:"<?php echo $type; ?>",
-                productID:<?php echo $operator_id; ?>
-                //<?php echo (!empty($specific_tours) ? ',specificTours: ['. $specific_tours . ']' : '') ?>
-                ,campaignID: campaignID
-                ,showFutureEvents:true
-                //,showFutureEventsPeriod:365
-                ,showAllAccom: true
-                ,showAllTours: true
-                ,showHoverInline: true
-                ,showHoverInlineToggleButtonContent: "More info"
-            });
-        } else {
-
-            removeHash();
-
-            <?php if($type == 'tours'): ?>
-
-            BE.gadget.details("#itemGadget",{
-                vcID:<?php echo $vc_id ?>,
-                type:"<?php echo $type; ?>",
-                productID:<?php echo $operator_id; ?>
-                //,showFutureEvents:true
-                //,showFutureEventsPeriod:365
-                //<?php echo (!empty($specific_tours) ? ',specificTours: ['. $specific_tours . ']' : '') ?>
-                ,period:2
-                ,adults:2
-                ,showAllAccom: true
-                ,showAllTours: true
-                ,showHoverInline: true
-                ,collapseToursMode: true
-                ,showHoverInlineToggleButtonContent: "More info"
-            });
-
-            <?php else: ?>
-
-            BE.gadget.details("#itemGadget",{
-                vcID:<?php echo $vc_id ?>,
-                type:"<?php echo $type; ?>",
-                productID:<?php echo $operator_id; ?>
-                //<?php echo (!empty($specific_tours) ? ',specificTours: ['. $specific_tours . ']' : '') ?>
-                ,showFutureEvents:true
-                ,showFutureEventsPeriod:365
-                ,showAllAccom: true
-                ,showAllTours: true
-                ,showHoverInline: true
-                ,showHoverInlineToggleButtonContent: "More info"
-            });
-
-            <?php endif; ?>
-
-            jQuery('.infants, .concessions, .students, .observers, .family').wrapAll('<div class="concession-type"></div>');
-            jQuery(".children").after('<a id="show-concessions-link" style="cursor:pointer;">Show Concessions</a>');
-            jQuery('.concession-type').hide();
-            jQuery('.booking-widget').on('click', '#show-concessions-link', function() {
-              jQuery(this).next('.concession-type').toggle();
-              if (jQuery('.concession-type').is(':visible')) {
-                jQuery('#show-concessions-link').text('Hide Concessions');
-              } else {
-                jQuery('#show-concessions-link').text('Show Concessions');
-              }
-
-            });
-        }
-
+        });
 
         jQuery('head link[href="//gadgets.impartmedia.com/css/all.cssz"]').remove();
 
@@ -380,14 +199,12 @@
                     el.find('.total .left').prepend('<span class="totalPrice">' + total + '</span>');
                 }
 
-                /*
                 var title = jQuery(el).find('.roomName').text();
                 title = title.toLowerCase();
 
                 if(title.indexOf('pass') !== -1 || title.indexOf('combo') !== -1 || title.indexOf('self-guided') !== -1){
                     el.find('.start-time').hide();
                 }
-                */
 
             });
 
@@ -430,19 +247,9 @@
                 if (prices_added) {
                     collapsePrices();
                 }
-
                 if (descriptions_added) {
                     copyBriefDescription();
                 }
-
-                if (typeof window.showRows !== "undefined") {
-                    showRows();
-                }
-
-                if (typeof window.sortTable !== "undefined") {
-                    sortTable();
-                }
-
             }
             priceGridObserver = new MutationObserver(callback);
             priceGridObserver.observe(grid, {
@@ -487,7 +294,4 @@
 
     });
 
-
-
-</script>
-
+  </script>

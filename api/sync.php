@@ -1,5 +1,8 @@
 <?php
     
+    ini_set('max_execution_time', 0);
+    ini_set('max_input_time', '-1');
+    set_time_limit(0);
     //you can cron this bro.
 
     define('WP_USE_THEMES', false);
@@ -13,10 +16,17 @@
 
     if (isset($argv)) {
         $type = isset($argv[1]) ? $argv[1] : 'sync';
-    }
-    else {
+    } else {
         $type = isset($_GET['type']) ? $_GET['type'] : 'sync';
     }
+
+
+    if (isset($argv)) {
+        $operators = isset($argv[2]) ? explode(',', $argv[2]) : null;
+    } else {
+        $operators = isset($_GET['op']) ? explode(',', $_GET['op']) : null;
+    }
+    
 
     if(PHP_SAPI != 'cli'): 
 ?>    
@@ -40,8 +50,12 @@
 <?php 
     endif; 
     $sync = new BookeasyOperators_Import();
-    $result = $sync->$type();
-
+    if($type == 'cats'){
+        $result = $sync->$type();
+    } else {
+        $result = $sync->$type($operators);
+    }
+    
     echo $result;
     echo '...Done';
     if(PHP_SAPI != 'cli'): 

@@ -85,6 +85,7 @@ class Bookeasy_Settings extends Bookeasy{
     public function __construct()
     {
         add_action( 'admin_menu', array( $this, 'add_plugin_page' ) );
+        //add_action( 'admin_menu', array( $this, 'add_post_columns' ) );
         add_action( 'admin_init', array( $this, 'admin_init' ) );
         add_action( 'admin_enqueue_scripts', array( $this, 'admin_enqueue_scripts' ) );
 
@@ -115,6 +116,7 @@ class Bookeasy_Settings extends Bookeasy{
      */
     public function post_column($columns){
         $columns['bookeasy'] = __( 'Bookeasy', 'bookeasy' );
+        $columns['bookeasy_cats'] = __( 'Categories', 'categories' );
         return $columns;
     }
 
@@ -129,8 +131,34 @@ class Bookeasy_Settings extends Bookeasy{
             $operatorID = get_post_meta($post_id, 'bookeasy_OperatorID', true);
             echo '<a href="#update_operator" class="button-primary update_operator" data-operator-id="'.$operatorID.'">Update operator</a>';
         }
+
+        if($column == 'bookeasy_cats'){
+            $this->load_vars();
+
+            $post_categories = get_the_terms( $post_id, $this->options['taxonomy']);
+            $primary_cat = $this->primary_cat($post_id, $this->options['taxonomy']);
+            $cats = array();
+
+            foreach($post_categories as $c){
+                $cat = get_category( $c );
+                $cats[] = $primary_cat == $cat->term_id ? '<strong>'.$cat->name.'</strong>' : $cat->name;
+            }
+
+            echo implode(', ', $cats);
+        }
     }
 
+
+
+    public function primary_cat($postId, $taxonomy){
+        
+        if(class_exists('WPSEO_Primary_Term')){
+            $primary = new WPSEO_Primary_Term($taxonomy, $postId);
+            return $primary->get_primary_term();
+        }
+
+        return 0;
+    }
 
 
     /**
@@ -201,43 +229,71 @@ class Bookeasy_Settings extends Bookeasy{
 
     public function info_page(){
         // Set class property
+
+
         ?>
         <div class="wrap">
 
-            <div class="postbox custom-form custom-results">
+            <div class="postbox custom-form custom-form-bookeasy custom-results">
                 <div class="inner">
                     <h3>Short Codes</h3>
                     <div class="inner-inner">
+                    <h2>Horizonal Search</h2>
                     <p>
                         <pre><code>[bookeasy_horizontal_search]</code></pre>
-                        <br />
-                        <br />
-
+                        <br>
                     </p>
+
+                    <h2>Single item</h2>
                     <p>
                         <pre><code>[bookeasy_single]</code></pre>
-                        <br />
-                        <br />
+                        <br>
                     </p>
+
+                    <h2>Accom Results</h2>
                     <p>
                         <pre><code>[bookeasy_results]</code></pre>
-                        <br />
-                        <br />
+                        <div>note: defaults to period = 3 and adults = 2</div>
+                        <pre><code>[bookeasy_results period="3" adults="2"]</code></pre>
+                        <pre><code>[bookeasy_results force_accom_type="Chalets/Villas/Cottages"]</code></pre>
+                        <pre><code style="word-break: break-all;">[bookeasy_results limit_locations="Augusta,Busselton,Carbunup River,Cowaramup,Dunsborough,Gnarabup,Gracetown,Hamelin Bay,Karridale,Margaret River,Metricup,Prevelly,Rosa Brook,Witchcliffe,Yallingup"]</code></pre>
+                        <br>
                     </p>
+
+                    <h2>Tour Results</h2>
+                    <p>
+                        <pre><code>[bookeasy_tour_results]</code></pre>
+                        <div>note: defaults to period = 1 and adults = 1</div>
+                        <pre><code>[bookeasy_tour_results period="1" adults="2"]</code></pre>
+                        <pre><code>[bookeasy_tour_results force_tour_type="Whale Watching"]</code></pre>
+                        <br>
+                    </p>
+
+                    <h2>Cart</h2>
                     <p>
                         <pre><code>[bookeasy_cart]</code></pre>
-                        <br />
-                        <br />
+                        <br>
                     </p>
+
+                    <h2>Booking page</h2>
                     <p>
                         <pre><code>[bookeasy_book]</code></pre>
-                        <br />
-                        <br />
+                        <pre><code>[bookeasy_book booked_by="Online"]</code></pre>
+                        <br>
                     </p>
+
+                    <h2>Confirmation page</h2>
                     <p>
                         <pre><code>[bookeasy_confirm]</code></pre>
-                        <br />
-                        <br />
+                        <pre><code>[bookeasy_confirm pdf_link_text="Download your itinerary PDF now."]</code></pre>
+                        <pre><code>[bookeasy_confirm thank_you_text=""]</code></pre>
+                        <br>
+                    </p>
+
+                    <h2>Platinum Partner fixes</h2>
+                        <p>
+                        <pre><code>[bookeasy_platinum_partners]</code></pre>
+                        <br>
                     </p>
 
                     </div>
@@ -468,7 +524,7 @@ class Bookeasy_Settings extends Bookeasy{
                 $taxonomies = get_taxonomies(array('public' => true), 'objects');
                 echo '<select id="'.$id.'" name="'.$this->optionGroup.'['.$id.']">';
                 foreach ( $taxonomies as $taxonomy ) {
-                    $selected = (!empty($this->options[$id]) && $taxonomy->name == $this->options[$id] ? ' selected="selected"' : '');
+                    $selected = ($taxonomy->name == $this->options[$id] ? ' selected="selected"' : '');
                     echo '<option'.$selected.' value="'.$taxonomy->name.'">' . $taxonomy->label . '</option>';
                 }
                 echo '</select>';
@@ -478,7 +534,7 @@ class Bookeasy_Settings extends Bookeasy{
                 $post_types = get_post_types( '', 'names' );
                 echo '<select id="'.$id.'" name="'.$this->optionGroup.'['.$id.']">';
                 foreach ( $post_types as $post_type ) {
-                    $selected = (!empty($this->options[$id]) && $post_type == $this->options[$id] ? ' selected="selected"' : '');
+                    $selected = ($post_type == $this->options[$id] ? ' selected="selected"' : '');
                     echo '<option'.$selected.' value="'.$post_type.'">' . $post_type . '</option>';
                 }
                 echo '</select>';

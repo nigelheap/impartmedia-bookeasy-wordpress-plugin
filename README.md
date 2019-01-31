@@ -1,7 +1,7 @@
 # Impartmedia Bookeasy Wordpress Plugin
 A plugin that will import bookeasy operators information in to a post type in wordpress via: 
 
-https://webapi.impartmedia.com/api/getOperatorsInformation?q=vc_id
+https://webapi.bookeasy.com.au/api/getOperatorsInformation?q=vc_id
 
 
 # Install

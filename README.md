@@ -11,8 +11,15 @@ https://webapi.impartmedia.com/api/getOperatorsInformation?q=vc_id
 3. Enable the plugin via the admin section of the site
 4. Go to Bookeasy menu /wp-admin/admin.php?page=bookeasy > Config 
 5. Set the VC ID, post types, and api keys 
+6. Setup cron.. see below
 6. Run the sync from the sync tab
 
 # Cron
 
+### Background cron, actived from sync button
+
 ```* * * * * path/to/cron.sh ```
+
+### Forced cron
+
+``` 0 0 * * * /path/to/wp/plugins/bookeasy/api/sync.php ``` 

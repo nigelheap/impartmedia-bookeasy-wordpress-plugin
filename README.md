@@ -15,4 +15,4 @@ https://webapi.impartmedia.com/api/getOperatorsInformation?q=vc_id
 
 # Cron
 
-```0 0 * * * path/to/cron.sh ```
+```* * * * * path/to/cron.sh ```

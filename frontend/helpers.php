@@ -1,19 +1,27 @@
 <?php
+namespace Bookeasy\frontend;
 
-class Bookeasy_Helpers extends Bookeasy {
+use Bookeasy\Base;
+
+class Helpers extends Base {
 
     public static $_instance;
 
-    public function __construct(){
+    public function __construct()
+    {
         add_action("wp_ajax_refresh_operator", array($this, 'refresh_operator'));
         add_action("wp_ajax_nopriv_refresh_operator", array($this, 'refresh_operator'));
     }
 
-    public function refresh_operator(){
+    /**
+     *
+     */
+    public function refresh_operator()
+    {
         $operators = isset($_REQUEST['operators']) ? explode(',', $_REQUEST['operators']) : false;
 
         if(!empty($operators) && is_array($operators)){
-            $sync = new BookeasyOperators_Import();
+            $sync = new \Bookeasy\api\Import();
             echo $sync->sync($operators);  
             die();
         }
@@ -25,7 +33,13 @@ class Bookeasy_Helpers extends Bookeasy {
         die();
     }
 
-    public function loadRooms($operatorId, $postId){
+    /**
+     * @param $operatorId
+     * @param $postId
+     * @return void|boolean
+     */
+    public function loadRooms($operatorId, $postId)
+    {
 
         if(empty($operatorId)){
             return false;
@@ -38,7 +52,13 @@ class Bookeasy_Helpers extends Bookeasy {
 
     }
 
-    public function loadShortDetails($operatorId, $postId){
+    /**
+     * @param $operatorId
+     * @param $postId
+     * @return bool|mixed
+     */
+    public function loadShortDetails($operatorId, $postId)
+    {
 
         if(empty($operatorId)){
             return false;
@@ -54,20 +74,31 @@ class Bookeasy_Helpers extends Bookeasy {
 
 
     }
-    
 
+    /**
+     * @param $operatorId
+     * @param $postId
+     * @return mixed
+     */
     public static function rooms($operatorId, $postId){
         self::loadInstance();
         return self::$_instance->loadRooms($operatorId, $postId);
     }
 
+    /**
+     * @param $operatorId
+     * @param $postId
+     * @return mixed
+     */
     public static function shortDetails($operatorId, $postId){
         self::loadInstance();
         return self::$_instance->loadShortDetails($operatorId, $postId);
     }
 
 
-
+    /**
+     * @return Helpers
+     */
     public static function loadInstance(){
         if(!self::$_instance){
             self::$_instance = new self();
@@ -78,5 +109,4 @@ class Bookeasy_Helpers extends Bookeasy {
 
 }
 
-new Bookeasy_Helpers();
 

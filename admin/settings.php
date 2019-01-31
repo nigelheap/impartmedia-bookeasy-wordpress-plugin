@@ -1,81 +1,97 @@
 <?php
+namespace Bookeasy\admin;
 
+use Bookeasy\Base;
+use Bookeasy\library\Request;
 
-class Bookeasy_Settings extends Bookeasy{
+class Settings extends Base {
 
-
-    private $tabs = array(
+    private $tabs = [
         'sync' => 'Sync',
         'config' => 'Config',
         'categories' => 'Categories',
         'info' => 'Info',
-    );
+    ];
 
-    private $fields = array(
-        'vc_id' => array(
+
+    private $fields = [
+        'vc_id' => [
             'type' => 'text',
             'title' => 'VC ID',
             'desc' => '',
-        ),
-        'posttype' => array(
+        ],
+        'posttype' => [
             'type' => 'posttype',
             'title' => 'Post Type',
             'desc' => 'The post type to store the bookeasy data',
-        ),
-        'taxonomy' => array(
+        ],
+        'taxonomy' => [
             'type' => 'taxonomy',
             'title' => 'Taxonomy',
             'desc' => 'The taxonomy to store the bookeasy posts in',
-        ),
-        'accom_search_path' => array(
+        ],
+        'run_folder' => [
+            'type' => 'text',
+            'title' => 'Run Folder',
+            'desc' => 'Path to folder to dump bookeasy.sync file in. eg /var/www/html/wp-content/uploads',
+        ],
+        'accom_search_path' => [
             'type' => 'text',
             'title' => 'Accommodation Search Path',
             'desc' => 'Relative to home page',
-        ),
-        'accom_tabname' => array(
+        ],
+        'accom_tabname' => [
             'type' => 'text',
             'title' => 'Accommodation Tab Name',
-        ),
-        'tours_search_path' => array(
+            'desc' => '',
+        ],
+        'tours_search_path' => [
             'type' => 'text',
             'title' => 'Tour Search Path',
             'desc' => 'Relative to home page',
-        ),
-        'tours_tabname' => array(
+        ],
+        'tours_tabname' => [
             'type' => 'text',
             'title' => 'Tour Tab Name',
-        ),
-        'bookingurl' => array(
+            'desc' => '',
+        ],
+        'bookingurl' => [
             'type' => 'text',
             'title' => 'Booking URL',
             'desc' => 'Full url including protocol',
-        ),
-        'confirmationurl' => array(
+        ],
+        'confirmationurl' => [
             'type' => 'text',
             'title' => 'confirmation URL',
             'desc' => 'Full url including protocol',
-        ),
-        'itinerarycss' => array(
+        ],
+        'itinerarycss' => [
             'type' => 'text',
             'title' => 'itinerary css',
             'desc' => 'Full url including protocol',
-        ),
-        'location_ids' => array(
+        ],
+        'location_ids' => [
            'type' => 'text',
            'title' => "Location IDs",
            'desc' => 'Comma seperated list of location IDs to sync. If this is empty it will import all the operators. Eg 12,34,78 ',
-        ),
-        'notificaton_email' => array(
+        ],
+        'notificaton_email' => [
             'type' => 'text',
             'title' => "Notification Email",
-            'desc' => 'Email address to send the sync notifications',
-        ),
-        'apikeys' => array(
+            'desc' => 'Email addresses to send the sync notifications. comma separated',
+        ],
+        'apikeys' => [
             'type' => 'textarea',
             'title' => 'Api Keys',
             'desc' => 'one per line eg:<br> domain.com|AS3245AsdNQwjhwekrh',
-        ),
-    );
+        ],
+        'api_key' => [
+            'type' => 'text',
+            'title' => "Api for new bookeasy webapi",
+            'desc' => '',
+        ]
+
+    ];
 
 
 
@@ -111,8 +127,8 @@ class Bookeasy_Settings extends Bookeasy{
 
     /**
      * Add column header
-     * @param  Array $columns 
-     * @return  Array   
+     * @param  array $columns
+     * @return  array
      */
     public function post_column($columns){
         $columns['bookeasy'] = __( 'Bookeasy', 'bookeasy' );
@@ -122,7 +138,7 @@ class Bookeasy_Settings extends Bookeasy{
 
     /**
      * Add call content
-     * @param  Array $column  
+     * @param  array $column
      * @param  Int $post_id 
      * @return Null          
      */
@@ -153,7 +169,7 @@ class Bookeasy_Settings extends Bookeasy{
     public function primary_cat($postId, $taxonomy){
         
         if(class_exists('WPSEO_Primary_Term')){
-            $primary = new WPSEO_Primary_Term($taxonomy, $postId);
+            $primary = new \WPSEO_Primary_Term($taxonomy, $postId);
             return $primary->get_primary_term();
         }
 
@@ -196,7 +212,7 @@ class Bookeasy_Settings extends Bookeasy{
             <div id="icon-themes" class="icon32"></div>
             <h2>Bookeasy</h2>
             <?php settings_errors(); ?>
-            <?php $active_tab = Bookeasy_Request::get('tab', 'sync'); ?>
+            <?php $active_tab = Request::get('tab', 'sync'); ?>
             <h2 class="nav-tab-wrapper">
                 <?php foreach($this->tabs as $key => $tab): ?>
                 <a href="?page=<?php echo $this->nameSpace; ?>&tab=<?php echo $key; ?>" class="nav-tab <?php echo $active_tab == $key ? 'nav-tab-active' : ''; ?>"><?php echo $tab; ?></a>
@@ -227,11 +243,8 @@ class Bookeasy_Settings extends Bookeasy{
      * Pages
      */
 
-    public function info_page(){
-        // Set class property
-
-
-        ?>
+    public function info_page()
+    {  ?>
         <div class="wrap">
 
             <div class="postbox custom-form custom-form-bookeasy custom-results">
@@ -317,27 +330,44 @@ class Bookeasy_Settings extends Bookeasy{
 
     public function sync_page(){
         // Set class property
+        $email = $this->current_user_email();
+
+        $queue = Request::post('queue_' . $this->nameSpace, false);
+        $run_folder = rtrim($this->options['run_folder'], DIRECTORY_SEPARATOR);
+        $file = $run_folder . DIRECTORY_SEPARATOR . 'bookeasy.sync';
+        $success = false;
+        if(!empty($queue)){
+
+            $success = file_put_contents($file, $email);
+        }
+
         ?>
         <div class="wrap">
-
-            <form method="post" target="bookeasy-results" id="sync-form" action="<?php echo plugins_url('../api/sync.php', __FILE__); ?>" class="postbox custom-form">
+            <?php if(!empty($run_folder) && $success): ?>
+                <div class="updated settings-error notice is-dismissible">
+                    <p><strong>Sync bookeasy operators on next cron run (< 1 minute)</strong></p>
+                    <button type="button" class="notice-dismiss">
+                        <span class="screen-reader-text">Dismiss this notice.</span>
+                    </button>
+                </div>
+            <?php endif; ?>
+            <?php if(file_exists($file) && $content = file_get_contents($file)): ?>
+                <div class="updated settings-error notice">
+                    <p><strong>Sync queued for <?php echo $content; ?></strong></p>
+                </div>
+            <?php endif; ?>
+            <form method="post" id="sync-form" action="" class="postbox custom-form">
                 <div class="inside">
-                <h3>Sync Bookeasy Operators</h3>
-                <?php
-                    submit_button('Sync Now');
-                ?>
+                    <h3>Queue sync of bookeasy operators</h3>
+                    <p>Once complete an email will be sent to <?php echo $email; ?></p>
+
+                    <input type="hidden" name="queue_<?php echo $this->nameSpace; ?>" value="1">
+                    <?php
+                    submit_button('Queue Sync');
+                    ?>
                 </div>
             </form>
 
-            <div class="postbox custom-form custom-results" id="sync-results">
-                <div class="inner">
-                    <h3>Sync Results</h3>
-                    <div class="inner-inner">
-                        <div id="sync-message"></div>
-                        <iframe height="50" name="bookeasy-results" width="100%" frameborder="0"></iframe>
-                    </div>
-                </div>
-            </div>
 
         </div>
         <?php
@@ -401,23 +431,26 @@ class Bookeasy_Settings extends Bookeasy{
         <?php
     }
 
-
-    public function save(){
+    /**
+     * save the page
+     */
+    public function save()
+    {
 
         if(empty($_POST)){
             return;
         }
 
-        if(Bookeasy_Request::get('page') != $this->nameSpace){
+        if(Request::get('page') != $this->nameSpace){
             return;
         }
 
-        switch(Bookeasy_Request::get('tab')){
+        switch(Request::get('tab')){
             case 'settings':
-                update_option($this->optionGroup, Bookeasy_Request::post($this->optionGroup));
+                update_option($this->optionGroup, Request::post($this->optionGroup));
             break;
             case 'categories':
-                update_option($this->optionGroupCategories, Bookeasy_Request::post($this->optionGroupCategories));
+                update_option($this->optionGroupCategories, Request::post($this->optionGroupCategories));
             break;
         }
 
@@ -427,7 +460,8 @@ class Bookeasy_Settings extends Bookeasy{
     /**
      * Register and add settings
      */
-    public function admin_init(){
+    public function admin_init()
+    {
 
         // If the theme options don't exist, create them.
         if( false == get_option( $this->optionGroup ) ) {
@@ -445,7 +479,6 @@ class Bookeasy_Settings extends Bookeasy{
         } // end if
 
         //$this->save();
-
         /**
          * Settings page
          */
@@ -501,7 +534,9 @@ class Bookeasy_Settings extends Bookeasy{
     }
 
 
-    public function field_callback($args){
+    public function field_callback($args)
+    {
+
         $id = $args['id'];
         $desc = $args['desc'];
 
@@ -547,7 +582,8 @@ class Bookeasy_Settings extends Bookeasy{
     /**
      * Get the settings option array and print one of its values
      */
-    public function mapping_callback(){
+    public function mapping_callback()
+    {
 
         $bookeasyCats = $this->categoriesSync['bookeasy_cats'];
         if(empty($bookeasyCats)){
@@ -602,8 +638,14 @@ class Bookeasy_Settings extends Bookeasy{
         print 'Please choose where the bookeasy Categories will be linked.';
     }
 
-
-    public function buildSelect($terms, $attrs, $selected = null){
+    /**
+     * @param $terms
+     * @param $attrs
+     * @param null $selected
+     * @return string
+     */
+    public function buildSelect($terms, $attrs, $selected = null)
+    {
         $output ="<select ".$attrs.">";
         $output .="<option value='0'>Please Select</option>";
         foreach($terms as $term){
@@ -616,9 +658,17 @@ class Bookeasy_Settings extends Bookeasy{
 
     }
 
+    /**
+     * Get current user email
+     * @return string
+     *
+     */
+    function current_user_email()
+    {
+        $current_user =  wp_get_current_user();
+        return $current_user->user_email;
+    }
+
 
 }
 
-if( is_admin()){
-    new Bookeasy_Settings();
-}

@@ -10,6 +10,7 @@ $w(function() {
 
         <?php if(!empty($limit_locations) && is_array($limit_locations)): ?>limitLocations : <?php echo json_encode($limit_locations); ?>,<?php endif; ?>
         <?php if(!empty($default_region_loc)): ?>defaultRegionLoc : "<?php echo $default_region_loc; ?>",<?php endif; ?>
+        <?php if(!empty($google_maps_api)): ?>googleMapsKey : "<?php echo $google_maps_api; ?>",<?php endif; ?>
         showAllAccom:true,
         listAllMode:false,
         showMap:true,

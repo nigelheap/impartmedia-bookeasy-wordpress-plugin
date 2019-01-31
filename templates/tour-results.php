@@ -18,6 +18,7 @@ $w(function() {
         vcID:<?php echo $vc_id ?>,
         period:"<?php echo $period ?>",
         adults:"<?php echo $adults ?>",
+
         showAllAccom:false,
         listAllMode:false,
         showMap:true,
@@ -33,7 +34,7 @@ $w(function() {
         disabledTypes:["accom","events","carhire","packages"],
         //scriptCustomURLs:"/accommodation/script/customurls",
         <?php if(!empty($force_tour_type)): ?>forceTourType: "<?php echo $force_tour_type; ?>",<?php endif; ?>
-
+        <?php if(!empty($google_maps_api)): ?>googleMapsKey : "<?php echo $google_maps_api; ?>",<?php endif; ?>
         <?php if(!empty($limit_locations) && is_array($limit_locations)): ?>limitLocations : <?php echo json_encode($limit_locations); ?>,<?php endif; ?>
         <?php if(!empty($default_region_loc)): ?>defaultRegionLoc : "<?php echo $default_region_loc; ?>",<?php endif; ?>
 
@@ -51,7 +52,7 @@ $w(function() {
 </script>
 <?php echo BookEasy_Template::get('templates/_results_adjustments'); ?>
 <?php echo BookEasy_Template::get('templates/_platinum_partners', array(
-    'platinum_partners_limit' => $platinum_partners_limit,
+    'platinum_partners_limit' => !empty($platinum_partners_limit) ? $platinum_partners_limit : false,
     'platinum_partners_term' => 'tours',
     'platinum_partners_taxonomy' => $taxonomy,
 )); ?>

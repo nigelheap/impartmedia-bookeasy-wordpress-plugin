@@ -20,9 +20,9 @@
 <script type="text/javascript">
 
 
-/*
+/**
 BE.gadget.cart("#toolbar-cart", {
-    vcID:<?php echo amazingalbany_vcid(); ?>,
+    vcID:<?php echo $vc_id; ?>,
     bookingURL:"<?php echo (isset($_SERVER['HTTP_HOST']) ? '//' .$_SERVER['HTTP_HOST'] : '' ) ?>/accommodation/book",
     autoCollapse:true
 });
@@ -52,8 +52,8 @@ setTimeout(function(){
                 <?php if($tours == 'true'): ?>
                 "tours":{
                     "tabName":"<?php echo $tours_tabname; ?>",
-                    "period":2,
-                    "adults":2,
+                    "period":1,
+                    "adults":1,
                     "children":0,
                     "defaultDaysFromToday":0,
                     "infants":0,

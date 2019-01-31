@@ -1,7 +1,7 @@
 <?php
+namespace Bookeasy\library;
 
-
-class BookEasy_Template{
+class Template{
     
 
     /**

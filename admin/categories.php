@@ -1,7 +1,7 @@
 <?php
+namespace Bookeasy\admin;
 
-
-class BookeasyOperators_Categories
+class Categories
 {
     /**
      * Holds the values to be used in the fields callbacks
@@ -133,6 +133,7 @@ class BookeasyOperators_Categories
      * Sanitize each setting field as needed
      *
      * @param array $input Contains all settings fields as array keys
+     * @return array
      */
     public function sanitize( $input )
     {
@@ -212,6 +213,4 @@ class BookeasyOperators_Categories
 
 }
 
-if( is_admin()){
-    new BookeasyOperators_Categories();
-}
+

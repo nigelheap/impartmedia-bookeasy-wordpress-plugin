@@ -1,7 +1,7 @@
 <?php
+namespace Bookeasy\library;
 
-
-class BookEasy_Request{
+class Request{
     
 
     /**

@@ -1,4 +1,8 @@
 <?php
+namespace Bookeasy\api;
+
+use Bookeasy\Base;
+use Bookeasy\library\Request;
 
 /**
  * Nice endpoint for operator data
@@ -25,7 +29,7 @@
  * 
  * 
  */
-class BookeasyOperators_Endpoint extends Bookeasy{
+class Endpoint extends Base {
 
 
     public function __construct(){
@@ -34,7 +38,7 @@ class BookeasyOperators_Endpoint extends Bookeasy{
         add_action('rest_api_init', function() {
 
             register_rest_route($this->nameSpace, 'operators', array(
-                'methods' => WP_REST_Server::READABLE,
+                'methods' => \WP_REST_Server::READABLE,
                 'callback' => array($this, 'operators'),
             ));
             
@@ -53,10 +57,10 @@ class BookeasyOperators_Endpoint extends Bookeasy{
 
     /**
      * Return the members details
-     * @param  ObjeArrayct $object     
-     * @param  String $field_name 
-     * @param  Array $request    [description]
-     * @return [type]             [description]
+     * @param  Object|array $object
+     * @param  String $field_name
+     * @param  array $request [description]
+     * @return array [type]             [description]
      */
     public function member($object, $field_name, $request) {
 
@@ -135,9 +139,6 @@ class BookeasyOperators_Endpoint extends Bookeasy{
     public function operators(){
 
         $this->load();
-
-        global $wpdb;
-
         $result = array();
 
         $args = array(
@@ -145,32 +146,32 @@ class BookeasyOperators_Endpoint extends Bookeasy{
             'posts_per_page' => '-1'
         );
 
-        if(BookEasy_Request::get('s', false)){
-            $args['s'] = BookEasy_Request::get('s', false);
+        if(Request::get('s', false)){
+            $args['s'] = Request::get('s', false);
         }
 
-        if(BookEasy_Request::get('tag', false)){
-            $args['tag'] = BookEasy_Request::get('tag', false);
+        if(Request::get('tag', false)){
+            $args['tag'] = Request::get('tag', false);
         }
 
-        if(BookEasy_Request::get('cat', false)){
-            $args['cat'] = BookEasy_Request::get('cat', false);
+        if(Request::get('cat', false)){
+            $args['cat'] = Request::get('cat', false);
         }
 
-        if(BookEasy_Request::get('category_name', false)){
-            $args['category_name'] = BookEasy_Request::get('category_name', false);
+        if(Request::get('category_name', false)){
+            $args['category_name'] = Request::get('category_name', false);
         }
 
-        if(BookEasy_Request::get('orderby', false)){
-            $args['orderby'] = BookEasy_Request::get('orderby', false);
+        if(Request::get('orderby', false)){
+            $args['orderby'] = Request::get('orderby', false);
         }
 
-        if(BookEasy_Request::get('order', false)){
-            $args['order'] = BookEasy_Request::get('order', false);
+        if(Request::get('order', false)){
+            $args['order'] = Request::get('order', false);
         }
 
         
-        $query = new WP_Query($args);
+        $query = new \WP_Query($args);
 
         if(!$query){
             return $result;
@@ -220,7 +221,7 @@ class BookeasyOperators_Endpoint extends Bookeasy{
     public function primary($postId, $taxonomy){
         
         if(class_exists('WPSEO_Primary_Term')){
-            $primary = new WPSEO_Primary_Term($taxonomy, $postId);
+            $primary = new \WPSEO_Primary_Term($taxonomy, $postId);
             return $primary->get_primary_term();
         }
 
@@ -260,7 +261,7 @@ class BookeasyOperators_Endpoint extends Bookeasy{
      * Get Meta
      * @param  Int $id  
      * @param  String $key 
-     * @return Thing      
+     * @return array|string
      */
     public function meta($id, $key){
         return get_post_meta($id, $this->nameSpace . '_' . $key, true);
@@ -296,4 +297,3 @@ class BookeasyOperators_Endpoint extends Bookeasy{
 
 }
 
-new BookeasyOperators_Endpoint();

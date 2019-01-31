@@ -1,12 +1,19 @@
 <?php
-    
+
     ini_set('max_execution_time', 0);
     ini_set('max_input_time', '-1');
+    ini_set('output_buffering', 'Off');
+
     set_time_limit(0);
     //you can cron this bro.
 
     define('WP_USE_THEMES', false);
-    require(__DIR__ . '/../../../../wp-load.php');
+
+    if(file_exists(__DIR__ . '/../../../../wp-load.php')){
+        require(__DIR__ . '/../../../../wp-load.php');
+    } else {
+        require(__DIR__ . '/../../../wp-load.php');
+    }
 
     if (!current_user_can('manage_options') && PHP_SAPI != 'cli') {
         die('No Access');
@@ -14,22 +21,23 @@
 
     global $wpdb;
 
-    if (isset($argv)) {
-        $type = isset($argv[1]) ? $argv[1] : 'sync';
+
+
+
+    if(!empty($argv)){
+        $options = getopt('t::o::e::');
+
+        $type = isset($options['t']) ? $options['t'] : 'sync';
+        $operators = isset($options['o']) ? explode(',', $options['o']) : null;
+        $email = isset($options['e']) ? $options['e'] : null;
     } else {
         $type = isset($_GET['type']) ? $_GET['type'] : 'sync';
-    }
-
-
-    if (isset($argv)) {
-        $operators = isset($argv[2]) ? explode(',', $argv[2]) : null;
-    } else {
         $operators = isset($_GET['op']) ? explode(',', $_GET['op']) : null;
+        $email = null;
     }
-    
 
-    if(PHP_SAPI != 'cli'): 
-?>    
+if(PHP_SAPI != 'cli'):
+?>
 <!doctype html>
 <html lang="en">
 <head>
@@ -49,11 +57,12 @@
 <body>
 <?php 
     endif; 
-    $sync = new BookeasyOperators_Import();
+    $sync = new \Bookeasy\api\Import();
+
     if($type == 'cats'){
         $result = $sync->$type();
     } else {
-        $result = $sync->$type($operators);
+        $result = $sync->$type($operators, $email);
     }
     
     echo $result;

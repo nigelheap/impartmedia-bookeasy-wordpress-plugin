@@ -1,6 +1,7 @@
 <?php
+namespace Bookeasy;
 
-class Bookeasy {
+class Base {
 
     /**
      * Holds the values to be used in the fields callbacks
@@ -21,24 +22,33 @@ class Bookeasy {
     public $sectionName = 'settings_section';
     public $sectionNameCategories = 'categories_section';
 
-
-    public function load_vars(){
+    /**
+     * Load all the vars
+     */
+    public function load_vars()
+    {
         $this->options = get_option($this->optionGroup); 
         $this->categories = get_option($this->optionGroupCategories);
         $this->categoriesSync = get_option($this->optionGroupCategoriesSync);
     }
 
-
-    public function load(){
+    /**
+     * Loading items
+     */
+    public function load()
+    {
         if(empty($this->options) || empty($this->categories) || empty($this->categoriesSync)){
             $this->load_vars();
         }
     }
 
 
+    /**
+     * Work out the api key for the frontend
+     */
     public function api_key(){
         if(empty($this->options)){
-            $this->loat_vars();
+            $this->load_vars();
         }
 
         if(empty($this->options['apikeys'])){
@@ -54,20 +64,6 @@ class Bookeasy {
                 return $apikey;
             }
         }
-
-    }
-
-    public function storeRooms($operatorId, $postId){
-
-        $id = $this->options['vc_id'];
-        $url = BOOKEASY_ENDPOINT . BOOKEASY_OPERATORDETAILSSHORT;
-        $url = str_replace('[vc_id]', $id, $url);
-        $url = str_replace('[operators_id]', $operatorId, $url);
-
-        // create the url and fetch the stuff
-        $json = file_get_contents($url);
-        $arr = json_decode($json, true);
-
 
     }
 

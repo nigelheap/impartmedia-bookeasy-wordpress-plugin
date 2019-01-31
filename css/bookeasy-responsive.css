@@ -717,6 +717,8 @@
     .priceGrid table tbody tr td.name a.roomName {
         display: block;
         margin-bottom: 10px;
+        word-break: break-word;
+        clear: both;
     }
     .priceGrid table tbody tr td.name .thumb {
         margin-right: 35px;
@@ -988,20 +990,6 @@
     cursor: pointer
 }
 
-/*.prices-grid .instant-confirmation .thumb:after {
-    content: "Instant Confirmation";
-    position: absolute;
-    bottom: 3px;
-    left: 3px;
-    background-color: #222;
-    border-radius: 3px;
-    color: #fff;
-    font: 10px;
-    text-transform: uppercase;
-    font-size: 9px;
-    padding: 2px 5px
-}*/
-
 .rating_0, .rating_0_5, .rating_1, .rating_1_5, .rating_2, .rating_2_5,
 .rating_3, .rating_3_5, .rating_4, .rating_4_5, .rating_5 {
     background: url(images/icon.ratings.centered.png) no-repeat;
@@ -1179,124 +1167,6 @@
     display: none;
 }
 
-/*
-.gm-style>div:first-child>div+div>div:last-child>div>div:first-child>div {
-    background-color: transparent !important;
-    box-shadow: none !important;
-    width: auto !important;
-    height: auto !important
-}
-
-.gm-style>div:first-child>div+div>div:last-child>div>div:first-child>div>div>div {
-    background-color: #323232 !important;
-    box-shadow: none !important
-}
-
-.gm-style>div:first-child>div+div>div:last-child>div>div:last-child {
-    margin-right: 5px;
-    margin-top: 5px
-}
-
-.gm-style>div:first-child>div+div>div:last-child>div>div:last-child>img {
-    display: none
-}
-
-.gm-style-iw {
-    top: 22px !important;
-    left: 22px !important;
-    background-color: #323232 !important;
-    border-radius: 3px;
-    width: 400px !important;
-    height: auto !important
-}
-
-.mapInfoWindow {
-    width: 400px;
-    padding: 1em;
-    position: relative;
-    padding-right: 165px;
-    min-height: 150px;
-    margin: 0
-}
-
-.mapInfoWindow .thumb {
-    position: absolute;
-    right: 0;
-    top: 0
-}
-
-.mapInfoWindow .name {
-    font: italic 700 1.4em Georgia, serif;
-    display: block;
-    font-size: 20px;
-    color: #fff;
-    margin-bottom: 3px;
-    margin-top: 0
-}
-
-.mapInfoWindow .address {
-    display: block;
-    text-transform: uppercase;
-    font: normal 400 12px 'Open Sans';
-    color: #ccc;
-    margin-bottom: 3px
-}
-
-.mapInfoWindow .details {
-    display: block
-}
-
-.mapInfoWindow .details .room {
-    display: none;
-    border-bottom: 1px solid #555;
-    position: relative;
-    text-transform: uppercase;
-    font: normal 400 12px 'Open Sans';
-    color: #ccc
-}
-
-.mapInfoWindow .details .room .name {
-    text-transform: uppercase;
-    font: normal 400 12px 'Open Sans';
-    color: #fff;
-    padding-right: 55px
-}
-
-.mapInfoWindow .details .room .price {
-    position: absolute;
-    right: 0;
-    top: 0;
-    color: #fff
-}
-
-.mapInfoWindow .button a {
-    display: block;
-    text-align: center;
-    background-color: #000;
-    border-radius: 3px;
-    width: 100%;
-    border: 0;
-    text-transform: uppercase;
-    padding: 1em 3em;
-    color: #fff !important;
-    font-size: 11px;
-    font-weight: bold;
-    cursor: pointer;
-    -moz-transition: background-color ease-in-out .4s;
-    -o-transition: background-color ease-in-out .4s;
-    -webkit-transition: background-color ease-in-out .4s;
-    transition: background-color ease-in-out .4s;
-    background-color: #f15b43;
-    padding: .5em 1em;
-    max-width: 120px;
-    color: #fff
-}
-
-.mapInfoWindow .button a:hover {
-    background-color: #f15b43
-}
-
-*/
 
 @media(max-width:721px) {
     .prices-grid table, .prices-grid thead, .prices-grid tbody, .prices-grid th,
@@ -1605,7 +1475,6 @@
 
 .shopping-cart .name a, .cartInOverlay .name a {
     font-size: 28px;
-    font-style: bold;
     padding-right: 23px;
     margin: 0 0 0 0;
     color: #222;
@@ -1616,21 +1485,9 @@
     width: 75%;
 }
 
-/*.shopping-cart .name a:after, .cartInOverlay .name a:after {
-    content: "View Details";
-    text-transform: lowercase;
-    color: #ccc;
-    font-family: sans-serif;
-    font-size: 11px;
-    padding-left: 1em;
-    font-weight: 100;
-    font-style: normal;
-    white-space: nowrap
-}*/
 
 .shopping-cart .operator span, .cartInOverlay .operator span {
-    font-family: 'Open Sans';
-    font-weight:400;
+    font-family: 'Open Sans', serif;
     text-transform: uppercase;
     font-size: 14px;
     display: block;
@@ -1644,7 +1501,7 @@
 }
 
 .shopping-cart .date-nights label, .cartInOverlay .date-nights label {
-    font-family: 'Open Sans';
+    font-family: 'Open Sans', serif;
     font-weight:400;
     display: inline-block;
     font-size: 12px;
@@ -1653,7 +1510,6 @@
 }
 
 .shopping-cart .date-nights span, .cartInOverlay .date-nights span {
-    font-family: ;
     color: #222;
     font-weight: 700;
     font-size: 12px;
@@ -1700,9 +1556,8 @@
     right: 30px;
     font-size: 28px;
     text-align: right;
-    font-style: bold;
     color: #222;
-    font-family: 'Open Sans';
+    font-family: 'Open Sans', serif;
     font-weight:400;
 }
 
@@ -1714,14 +1569,14 @@
 .shopping-cart .price label, .cartInOverlay .price label {
     font-size: 28px;
     text-align: right;
-    font-style: bold;
+    font-weight: bold;
     color: #222;
 }
 
 .shopping-cart .price label, .cartInOverlay .price label, .shopping-cart .remove a, .cartInOverlay .remove a {
     line-height: 25px;
     vertical-align: middle;
-    font-family: 'Open Sans';
+    font-family: 'Open Sans', serif;
     font-weight:400;
     text-align: right;
     display: block;
@@ -2006,6 +1861,7 @@
 .booking-gadget .personalDetails .event-tracking, .booking-gadget .ccDetails .event-tracking,
 .booking-gadget .personalDetails .receiveEnewsletter, .booking-gadget .ccDetails .receiveEnewsletter,
 .booking-gadget .personalDetails .acceptCancellationPolicy, .booking-gadget .ccDetails .acceptCancellationPolicy,
+.booking-gadget .personalDetails .receiveENewsletter, .booking-gadget .ccDetails .receiveENewsletter,
 .booking-gadget .personalDetails .cardTypes, .booking-gadget .ccDetails .cardTypes,
 .booking-gadget .personalDetails .name, .booking-gadget .ccDetails .name,
 .booking-gadget .personalDetails .number, .booking-gadget .ccDetails .number,
@@ -2025,12 +1881,9 @@
 .booking-gadget .personalDetails .country, .booking-gadget .ccDetails .country,
 .booking-gadget .personalDetails .phone, .booking-gadget .ccDetails .phone,
 .booking-gadget .personalDetails .email, .booking-gadget .ccDetails .email,
-.booking-gadget .personalDetails .comment, .booking-gadget .ccDetails .comment,
 .booking-gadget .personalDetails .hear-of-us, .booking-gadget .ccDetails .hear-of-us,
 .booking-gadget .personalDetails .WhereDidYouHearId, .booking-gadget .ccDetails .WhereDidYouHearId,
 .booking-gadget .personalDetails .event-tracking, .booking-gadget .ccDetails .event-tracking,
-.booking-gadget .personalDetails .receiveENewsletter, .booking-gadget .ccDetails .receiveENewsletter,
-.booking-gadget .personalDetails .acceptCancellationPolicy, .booking-gadget .ccDetails .acceptCancellationPolicy,
 .booking-gadget .personalDetails .cardTypes, .booking-gadget .ccDetails .cardTypes,
 .booking-gadget .personalDetails .name, .booking-gadget .ccDetails .name,
 .booking-gadget .personalDetails .number, .booking-gadget .ccDetails .number,
@@ -2038,21 +1891,32 @@
 .booking-gadget .personalDetails .ccv, .booking-gadget .ccDetails .ccv,
 .booking-gadget .personalDetails .button, .booking-gadget .ccDetails .button,
 .booking-gadget .personalDetails .paymentItem, .booking-gadget .ccDetails .paymentItem {
+    padding: 0 10px;
+    display: inline-block;
+
+}
+
+.booking-gadget .personalDetails .comment, .booking-gadget .ccDetails .comment,
+.booking-gadget .personalDetails .receiveENewsletter, .booking-gadget .ccDetails .receiveENewsletter,
+.booking-gadget .personalDetails .acceptCancellationPolicy, .booking-gadget .ccDetails .acceptCancellationPolicy{
     width: 100%;
     padding: 0 10px;
-    display: inline-block
+    display: block;
+    clear: both;
 }
 
 /* Fix checkbox */
+.booking-gadget .receiveENewsletter label,
 .booking-gadget .acceptCancellationPolicy label {
     display: inline;
-    float: right;
     vertical-align: middle;
     position: relative;
     top: 10px;
     left: -20px;
+    padding-left: 15px;
 }
 
+.booking-gadget .receiveENewsletter input[type='checkbox'],
 .booking-gadget .acceptCancellationPolicy input[type='checkbox'] {
     float: left;
     vertical-align: middle;
@@ -2114,8 +1978,7 @@
 .booking-gadget .personalDetails .city, .booking-gadget .ccDetails .city,
 .booking-gadget .personalDetails .state, .booking-gadget .ccDetails .state,
 .booking-gadget .personalDetails .postcode, .booking-gadget .ccDetails .postcode,
-.booking-gadget .personalDetails .hear-of-us, .booking-gadget .ccDetails .hear-of-us,
-.booking-gadget .personalDetails .receiveENewsletter, .booking-gadget .ccDetails .receiveENewsletter {
+.booking-gadget .personalDetails .hear-of-us, .booking-gadget .ccDetails .hear-of-us {
     display: none
 }
 
@@ -2243,9 +2106,7 @@
     }
 
     .booking-gadget .personalDetails .state, .booking-gadget .ccDetails .state,
-    .booking-gadget .personalDetails .postcode, .booking-gadget .ccDetails .postcode,
-    .booking-gadget .personalDetails .receiveENewsletter, .booking-gadget .ccDetails .receiveENewsletter,
-    .booking-gadget .personalDetails .acceptCancellationPolicy, .booking-gadget .ccDetails .acceptCancellationPolicy {
+    .booking-gadget .personalDetails .postcode, .booking-gadget .ccDetails .postcode {
         width: 25%
     }
 

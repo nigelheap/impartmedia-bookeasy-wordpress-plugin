@@ -29,13 +29,7 @@
       for (var i = 0; i < $toShow.length; i++) {
         table.find('.roomName').each(function(){
           if(jQuery(this).html().toLowerCase().startsWith($toShow[i].toLowerCase())){
-              // Updated below to check for a smartphone, seems that smartphones need an extra parent
-            if( /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ) {
-                jQuery(this).parent().parent().parent().show();    
-            } else {
-                jQuery(this).parent().parent().show();
-            }
-            
+            jQuery(this).closest('tr').show();
           }
         })
       }
@@ -45,7 +39,7 @@
 
       var table = jQuery('.priceGrid table');
       var switching = true;
-      var shouldSwitch = false;
+      var shouldSwitch = true;
 
       table.find('tr').each(function(){
         var cost = jQuery(this).find('.cost:eq(0)').text();
@@ -65,7 +59,7 @@
         rows = table.find("tr");
         /* Loop through all table rows (except the
         first, which contains table headers): */
-        for (i = 1; i < (rows.length - 1); i++) {
+        for (i = 0; i < (rows.length - 1); i++) {
           // Start by saying there should be no switching:
           shouldSwitch = false;
           /* Get the two elements you want to compare,
@@ -81,7 +75,7 @@
           }
         }
 
-        if (shouldSwitch) {
+        if (shouldSwitch && rows[i]) {
           rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
           switching = true;
         }
@@ -378,6 +372,13 @@
                 } else {
                     button.find('.im-pricebutton-amount').css('display', 'none');
                     el.find('.total .left').prepend('<span class="totalPrice">' + total + '</span>');
+                }
+
+                var startTime = jQuery(el).find('.start-time').text();
+                startTime = startTime.toLowerCase();
+
+                if(startTime.indexOf('12:00am') !== -1){
+                    el.find('.start-time').hide();
                 }
 
                 /*

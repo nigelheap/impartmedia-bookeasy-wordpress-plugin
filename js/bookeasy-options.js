@@ -28,7 +28,7 @@ jQuery(document).ready( function() {
                 operators : operator_id
             },
             success: function(response) {
-                if(response.created > 0 || response.updated > 0) {
+                if(response.created > 0 || response.updated > 0 || response.unpublished > 0) {
                     element.html('Updated');
                 }
                 else {

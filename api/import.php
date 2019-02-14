@@ -80,7 +80,7 @@ class Import extends Base {
             'visibleOperators'
         );
 
-        $this->visibleOperators = $arr['OperatorIds'];
+        $this->visibleOperators = $arr;
 
 
     }
@@ -104,7 +104,7 @@ class Import extends Base {
             $onlySync
         );
 
-        foreach($arr['Items'] as $mod){
+        foreach($arr as $mod){
             $this->modDates[$mod['OperatorId']] = $mod;
         }
 
@@ -212,7 +212,7 @@ class Import extends Base {
         $operatorsWithNewDetails = 0;
         $newOperators = 0;
 
-        foreach($arr['Items'] as $mod){
+        foreach($arr as $mod){
 
             if(!empty($onlySync) && !in_array($mod['OperatorId'], $onlySync)){
                 continue;
@@ -324,7 +324,7 @@ class Import extends Base {
 
             $result = $this->request(
                 $load,
-                'Operators',
+                false,
                 ' Operators Chunk',
                 $onlySync
             );
@@ -714,7 +714,7 @@ class Import extends Base {
             $onlySync
         );
 
-        foreach($arr['Items'] as $mod){
+        foreach($arr as $mod){
             $activeOperators[] = $mod['OperatorId'];
         }
 
@@ -812,7 +812,7 @@ class Import extends Base {
 
                 $result = $this->request(
                     $url,
-                    false,
+                    'Data',
                     'Extra Accom Chunk',
                     $onlySync
                 );
@@ -826,12 +826,11 @@ class Import extends Base {
 
             $arr = $this->request(
                 $url,
-                false,
+                'Data',
                 'Extra Accom Chunk',
                 $onlySync
             );
         }
-
 
         if(!empty($arr)){
             foreach($arr as $op){
@@ -898,7 +897,7 @@ class Import extends Base {
 
                 $result = $this->request(
                     $load,
-                    false,
+                    'Data',
                     'Prices Chunk',
                     $onlySync
                 );
@@ -911,7 +910,7 @@ class Import extends Base {
             $url .= '&operators='.implode(',', $onlySync);
             $arr = $this->request(
                 $url,
-                false,
+                'Data',
                 'Prices Chunk',
                 $onlySync
             );
@@ -920,7 +919,7 @@ class Import extends Base {
 
             $arr = $this->request(
                 $url,
-                false,
+                'Data',
                 'Prices Chunk',
                 $onlySync
             );
@@ -963,7 +962,7 @@ class Import extends Base {
 
                 $result = $this->request(
                     $load,
-                    false,
+                    'Data',
                     'Room Details.',
                     $onlySync
                 );
@@ -977,7 +976,7 @@ class Import extends Base {
 
             $arr = $this->request(
                 $url,
-                false,
+                'Data',
                 'Room Details. ',
                 $onlySync
             );
@@ -1014,7 +1013,7 @@ class Import extends Base {
         );
 
         $toLoad = [];
-        foreach($arr['Items'] as $mod){
+        foreach($arr as $mod){
                 $toLoad[] = $mod['OperatorId'];
         }
         
@@ -1053,7 +1052,7 @@ class Import extends Base {
         }
 
         $types = [];
-        foreach($arr['Operators'] as $op){
+        foreach($arr as $op){
 
             // add the rest of the field in to post data
             foreach($op as $opKey => $opItem){
@@ -1122,7 +1121,7 @@ class Import extends Base {
         $arr = json_decode($json, true);
 
         if(!empty($key) && isset($arr[$key]) && is_array($arr[$key])){
-            return $arr;
+            return $arr[$key];
         }
 
         if(empty($key) && is_array($arr)){

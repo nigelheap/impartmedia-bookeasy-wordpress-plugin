@@ -399,6 +399,7 @@ class Import extends Base {
             // Does this operator id exist already?
             if(!empty($post_id)){
 
+                $post['post_author'] = get_post_field( 'post_author', $post_id );
                 $post['ID'] =  $post_id;
 
                 $currentModDates = [

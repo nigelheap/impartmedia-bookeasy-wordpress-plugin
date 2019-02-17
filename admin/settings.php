@@ -30,11 +30,13 @@ class Settings extends Base {
             'title' => 'Taxonomy',
             'desc' => 'The taxonomy to store the bookeasy posts in',
         ],
+        /*
         'run_folder' => [
             'type' => 'text',
             'title' => 'Run Folder',
             'desc' => 'Path to folder to dump bookeasy.sync file in. eg /var/www/html/wp-content/uploads',
         ],
+        */
         'accom_search_path' => [
             'type' => 'text',
             'title' => 'Accommodation Search Path',
@@ -333,7 +335,7 @@ class Settings extends Base {
         $email = $this->current_user_email();
 
         $queue = Request::post('queue_' . $this->nameSpace, false);
-        $run_folder = rtrim($this->options['run_folder'], DIRECTORY_SEPARATOR);
+        $run_folder = rtrim(get_home_path() . 'wp-content/uploads', DIRECTORY_SEPARATOR);
         $file = $run_folder . DIRECTORY_SEPARATOR . 'bookeasy.sync';
         $success = false;
         if(!empty($queue)){

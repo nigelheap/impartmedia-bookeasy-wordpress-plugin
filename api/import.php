@@ -1027,7 +1027,6 @@ class Import extends Base {
             $chunks = array_chunk($toLoad, 20);
 
             $arr = [];
-            $arr['Operators'] = [];
 
             foreach($chunks as $chunk){
                 $load = $base . '&operators=' . implode(',', $chunk);
@@ -1039,7 +1038,7 @@ class Import extends Base {
                     $onlySync
                 );
 
-                $arr['Operators'] = array_merge($arr['Operators'], $result['Operators']);
+                $arr = array_merge($arr, $result);
             }
             
         } else {

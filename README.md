@@ -18,8 +18,8 @@ https://webapi.bookeasy.com.au/api/getOperatorsInformation?q=vc_id
 
 ### Background cron, actived from sync button
 
-```* * * * * path/to/cron.sh ```
+```* * * * * wp-plugins/plugins/bookeasy/cron.sh ```
 
 ### Forced cron
 
-``` 0 0 * * * /path/to/wp/plugins/bookeasy/api/sync.php ``` 
+``` 0 0 * * * wp-plugins/plugins/bookeasy/api/sync.php ``` 

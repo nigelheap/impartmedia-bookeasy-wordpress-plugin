@@ -50,11 +50,11 @@ $w(function() {
     }, 500);
 });
 </script>
-<?php echo BookEasy_Template::get('templates/_results_adjustments'); ?>
-<?php echo BookEasy_Template::get('templates/_platinum_partners', array(
+<?php echo  \Bookeasy\library\Template::get('templates/_results_adjustments'); ?>
+<?php echo  \Bookeasy\library\Template::get('templates/_platinum_partners', array(
     'platinum_partners_limit' => !empty($platinum_partners_limit) ? $platinum_partners_limit : false,
     'platinum_partners_term' => 'tours',
     'platinum_partners_taxonomy' => $taxonomy,
 )); ?>
-<?php echo BookEasy_Template::get('templates/_hide_operators'); ?>
-<?php echo BookEasy_Template::get('templates/_force_view'); ?>
+<?php echo  \Bookeasy\library\Template::get('templates/_hide_operators'); ?>
+<?php echo  \Bookeasy\library\Template::get('templates/_force_view'); ?>

@@ -236,7 +236,7 @@ class ShortCodes extends Base {
             'adults' => '1',
             'force_tour_type' => false,
             'default_region_loc' => false,
-            'google_maps_api' => get_field('maps_api_key', 'option'),
+            'google_maps_api' => get_option('maps_api_key', ''),
         );
 
         if(!empty($atts['limit_locations'])){
@@ -262,6 +262,8 @@ class ShortCodes extends Base {
     public function platinum_partners($atts = array()){
         $this->load();
 
+        $atts = !empty($atts) ? $atts : array();
+
         $data = array_merge($this->options, $atts);
 
         $return = '';
@@ -280,6 +282,8 @@ class ShortCodes extends Base {
      */
     public function hide_operators($atts = array()){
         $this->load();
+
+        $atts = !empty($atts) ? $atts : array();
 
         $data = array_merge($this->options, $atts);
 

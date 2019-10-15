@@ -19,16 +19,28 @@
         };
       }
 
-    <?php if(!empty($specific_tours_list)): ?>
+      function formatPrices() {
+          console.log('formatted prices');
+          if(!!jQuery('.has-affiliate-link .tour-row-item .tour-row-item-occ').size()){
+              jQuery('.has-affiliate-link .tour-row-item .tour-row-item-occ').each(function(){
+                  jQuery(this).after(jQuery(this).clone().removeClass('tour-row-item-occ').addClass('tour-row-price'));
+              })
+          }
+      }
+
+
+      <?php if(!empty($specific_tours_list)): ?>
 
     window.$toShow = <?php echo json_encode($specific_tours_list); ?>;
+    window.$neverShow = 'notCape Naturaliste Lighthouse';
 
     function showRows(){
       var table = jQuery('.priceGrid table');
       table.find('tr').hide();
       for (var i = 0; i < $toShow.length; i++) {
         table.find('.roomName').each(function(){
-          if(jQuery(this).html().toLowerCase().startsWith($toShow[i].toLowerCase())){
+          if(jQuery(this).html().toLowerCase().startsWith($toShow[i].toLowerCase())
+            && !jQuery(this).html().toLowerCase().includes($neverShow.toLowerCase())){
             jQuery(this).closest('tr').show();
           }
         })
@@ -182,15 +194,29 @@
         ?>
 
             var currentCookieObject = $w.json.parse($w.cookie(BE.util.cookieName()));
+            var hasCurrentCookieObject = (typeof currentCookieObject  === 'object');
+            var tmpUserState;
 
-            var tmpUserState = {
-                product:currentCookieObject.product,
-                period:currentCookieObject.period,
-                adults:currentCookieObject.adults,
-                children:currentCookieObject.children,
-                infants:currentCookieObject.children,
-                date:"<?php echo date('D d/m/Y', $newDate); ?>"
+            if(currentCookieObject){
+                tmpUserState = {
+                    product: hasCurrentCookieObject && (currentCookieObject.hasOwnProperty('product')) ? currentCookieObject.product : 'accom',
+                    period: hasCurrentCookieObject && (currentCookieObject.hasOwnProperty('period')) ? currentCookieObject.period : 1,
+                    adults: hasCurrentCookieObject && (currentCookieObject.hasOwnProperty('adults')) ? currentCookieObject.adults : 1,
+                    children: hasCurrentCookieObject && (currentCookieObject.hasOwnProperty('children')) ? currentCookieObject.children : "0",
+                    infants: hasCurrentCookieObject && (currentCookieObject.hasOwnProperty('infants')) ? currentCookieObject.children : "0",
+                    date:"<?php echo date('D d/m/Y', $newDate); ?>"
+                };
+            } else {
+                tmpUserState = {
+                    product: 'accom',
+                    period: 1,
+                    adults: 1,
+                    children: "0",
+                    infants: "0",
+                    date:"<?php echo date('D d/m/Y', $newDate); ?>"
+                };
             }
+
 
             $w.cookie(BE.util.cookieName(),$w.json.stringify(tmpUserState));
         
@@ -314,7 +340,7 @@
 
             checkResponsivePriceGrid();
 
-        }
+        };
 
         collapsePrices = function() {
 
@@ -392,9 +418,14 @@
 
             });
 
-        }
+            if (typeof window.formatPrices !== "undefined") {
+                formatPrices();
+            }
+
+        };
 
         var priceGridObserver;
+
         setupObserver = function() {
 
             // Don't bind multiple times
@@ -405,6 +436,7 @@
             // Watch #itemGadget's children
             // to detect when .priceGrid appears
             var grid = jQuery('#itemGadget')[0];
+
             callback = function(mutations){
                 var prices_added = false;
                 var descriptions_added = false;
@@ -428,6 +460,7 @@
                         }
                     }
                 }
+
                 if (prices_added) {
                     collapsePrices();
                 }
@@ -444,13 +477,14 @@
                     sortTable();
                 }
 
-            }
+            };
+
             priceGridObserver = new MutationObserver(callback);
             priceGridObserver.observe(grid, {
                 childList: true,
                 subtree: true
             });
-        }
+        };
         setupObserver();
 
         fixMobilePriceGrid = function() {

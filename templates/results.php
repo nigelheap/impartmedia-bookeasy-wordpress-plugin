@@ -31,16 +31,15 @@ $w(function() {
 
 });
 </script>
-<?php echo BookEasy_Template::get('templates/_results_adjustments'); ?>
-<?php echo BookEasy_Template::get('templates/_platinum_partners', array(
+<?php echo \Bookeasy\library\Template::get('templates/_results_adjustments'); ?>
+<?php echo  \Bookeasy\library\Template::get('templates/_platinum_partners', array(
     'platinum_partners_limit' => $platinum_partners_limit,
     'platinum_partners_term' => 'accommodation',
     'platinum_partners_taxonomy' => $taxonomy,
 )); ?>
-<?php echo BookEasy_Template::get('templates/_hide_operators'); ?>
-<?php echo BookEasy_Template::get('templates/_force_view'); ?>
-
-  <script type="text/javascript">
+<?php echo  \Bookeasy\library\Template::get('templates/_hide_operators'); ?>
+<?php echo  \Bookeasy\library\Template::get('templates/_force_view'); ?>
+<script type="text/javascript">
 
     var $checkCartInterval = 0;
     var $tripPlannerHoverTimeout = 0;
@@ -103,6 +102,5 @@ $w(function() {
         });
         $tripPlannerHoverTimeout = setTimeout(function() { jQuery(".toolbar-hover-popout").remove(); }, 10000);
     }
-    
 
-  </script>
+</script>

@@ -1,7 +1,9 @@
 <?php
 namespace Bookeasy\frontend;
 
+use Bookeasy\api\Import as BookeasyImport;
 use Bookeasy\Base;
+use Bookeasy\library\Request;
 
 class Helpers extends Base {
 
@@ -19,10 +21,18 @@ class Helpers extends Base {
     public function refresh_operator()
     {
         $operators = isset($_REQUEST['operators']) ? explode(',', $_REQUEST['operators']) : false;
+        $post_id = Request::req('post_id', false);
+        $result = [];
 
         if(!empty($operators) && is_array($operators)){
-            $sync = new \Bookeasy\api\Import();
-            echo $sync->sync($operators);  
+            $sync = new BookeasyImport();
+            $result = $sync->sync($operators);
+            $result = json_decode($result, true);
+        }
+
+
+        if(!empty($result)){
+            echo json_encode($result);
             die();
         }
 

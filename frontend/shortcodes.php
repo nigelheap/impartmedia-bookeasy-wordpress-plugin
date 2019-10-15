@@ -158,7 +158,7 @@ class ShortCodes extends Base {
             'force_accom_type' => false,
             'platinum_partners_limit' => false,
             'default_region_loc' => false,
-            'google_maps_api' => get_field('maps_api_key', 'option'),
+            'google_maps_api' => get_option('maps_api_key', ''),
         );
 
         if(!empty($atts['limit_locations'])){

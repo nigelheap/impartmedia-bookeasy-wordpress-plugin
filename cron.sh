@@ -15,7 +15,7 @@ if [  -f $RUN_FILE ]
 then
     EMAIL=$(<$RUN_FILE)
     rm -f $RUN_FILE
-    su -c "/usr/bin/php /var/www/html/wp-content/plugins/bookeasy/api/sync.php -e'$EMAIL'" -s /bin/bash www-data
-
+    #su -c "/usr/bin/php /var/www/html/wp-content/plugins/bookeasy/api/sync.php -e'$EMAIL'" -s /bin/bash www-data
+    /usr/bin/php /var/www/html/wp-content/plugins/bookeasy/api/sync.php -e'$EMAIL'
 fi
 

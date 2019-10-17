@@ -75,7 +75,7 @@ class Import extends Base {
 
 
         $arr = $this->request(
-            BOOKEASY_ENDPOINT . BOOKEASY_VISIBLEOPERATORS,
+            BOOKEASY_VISIBLEOPERATORS,
             'OperatorIds',
             'visibleOperators'
         );
@@ -98,7 +98,7 @@ class Import extends Base {
         $this->loadVisibleOperator();
 
         $arr = $this->request(
-            BOOKEASY_ENDPOINT . BOOKEASY_MODDATES,
+            BOOKEASY_MODDATES,
             'Items',
             'Mod Dates',
             $onlySync
@@ -194,7 +194,7 @@ class Import extends Base {
         $this->loadVisibleOperator();
 
         $arr = $this->request(
-            BOOKEASY_ENDPOINT . BOOKEASY_MODDATES,
+            BOOKEASY_MODDATES,
             'Items',
             'Mod Dates',
             $onlySync
@@ -303,7 +303,7 @@ class Import extends Base {
 
 
         //Operators info
-        $url = BOOKEASY_ENDPOINT . BOOKEASY_OPERATORINFO;
+        $url = BOOKEASY_OPERATORINFO;
         
         $postType = $this->options['posttype'];
         $category = $this->options['taxonomy'];
@@ -709,7 +709,7 @@ class Import extends Base {
         }
 
         $arr = $this->request(
-            BOOKEASY_ENDPOINT . BOOKEASY_MODDATES,
+            BOOKEASY_MODDATES,
             'Items',
             'Mod Dates unpublish',
             $onlySync
@@ -801,7 +801,7 @@ class Import extends Base {
      */
     public function extraAccom($onlySync = null, $toLoad = null){
 
-        $url = BOOKEASY_ENDPOINT . BOOKEASY_OPERATORDETAILSSHORT_ALL;
+        $url = BOOKEASY_OPERATORDETAILSSHORT_ALL;
 
         if(!empty($toLoad)){
             $base = $url;
@@ -852,7 +852,7 @@ class Import extends Base {
      */
     public function accomPrices($onlySync = null, $toLoad = null){
 
-        $url = BOOKEASY_ENDPOINT . BOOKEASY_ACCOMRATES;
+        $url = BOOKEASY_ACCOMRATES;
         $url .= '&date='. date('Y-m-d', strtotime('+1 Week'));
         $url .= '&period=2&adults=2';
 
@@ -868,7 +868,7 @@ class Import extends Base {
      */
     public function tourPrices($onlySync = null, $toLoad = null){
 
-        $url = BOOKEASY_ENDPOINT . BOOKEASY_TOURRATES;
+        $url = BOOKEASY_TOURRATES;
         $url .= '&date='. date('Y-m-d', strtotime('+1 Week'));
         $url .= '&adults=1';
 
@@ -948,7 +948,7 @@ class Import extends Base {
      */
     public function roomDetail($onlySync = null, $toLoad = null){
 
-        $url = BOOKEASY_ENDPOINT . BOOKEASY_ACCOMROOMSDETAILS_ALL;
+        $url = BOOKEASY_ACCOMROOMSDETAILS_ALL;
 
         if(!empty($toLoad)){
 
@@ -1007,7 +1007,7 @@ class Import extends Base {
         $toLoad = null;
 
         $arr = $this->request(
-            BOOKEASY_ENDPOINT . BOOKEASY_MODDATES,
+            BOOKEASY_MODDATES,
             'Items',
             'Mod Dates',
             $onlySync
@@ -1019,7 +1019,7 @@ class Import extends Base {
         }
         
         //Operators info
-        $url = BOOKEASY_ENDPOINT . BOOKEASY_OPERATORINFO;
+        $url = BOOKEASY_OPERATORINFO;
 
         if(!empty($toLoad)){
             $base = $url;
@@ -1088,7 +1088,9 @@ class Import extends Base {
         $id = $this->options['vc_id'];
         $apiKey = $this->options['api_key'];
 
-        $url = str_replace('[vc_id]', $id, $url);
+        $endpoint = $this->options['environment'] == 'pvt' ? BOOKEASY_ENDPOINT_PVT : BOOKEASY_ENDPOINT;
+
+        $url = $endpoint . str_replace('[vc_id]', $id, $url);
 
         $headers = [];
         if(!empty($apiKey)){

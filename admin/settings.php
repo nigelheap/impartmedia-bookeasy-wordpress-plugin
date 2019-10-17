@@ -84,13 +84,13 @@ class Settings extends Base {
         ],
         'apikeys' => [
             'type' => 'textarea',
-            'title' => 'Api Keys',
+            'title' => 'Gadget Api Keys',
             'desc' => 'one per line eg:<br> domain.com|AS3245AsdNQwjhwekrh',
         ],
         'api_key' => [
             'type' => 'text',
-            'title' => "Api for new bookeasy webapi",
-            'desc' => '',
+            'title' => "Web Api Key",
+            'desc' => 'Key for connecting to domain webapi.bookeasy.com.au',
         ]
 
     ];

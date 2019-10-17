@@ -15,6 +15,14 @@ class Settings extends Base {
 
 
     private $fields = [
+        'envrionment' => [
+            'type' => 'radios',
+            'title' => 'Environment',
+            'options' => [
+                'production' => 'Production',
+                'pvt' => 'Pre-Version Testing (PVT)'
+            ]
+        ],
         'vc_id' => [
             'type' => 'text',
             'title' => 'VC ID',
@@ -339,7 +347,6 @@ class Settings extends Base {
         $file = $run_folder . DIRECTORY_SEPARATOR . 'bookeasy.sync';
         $success = false;
         if(!empty($queue)){
-
             $success = file_put_contents($file, $email);
         }
 
@@ -446,6 +453,7 @@ class Settings extends Base {
         if(Request::get('page') != $this->nameSpace){
             return;
         }
+
 
         switch(Request::get('tab')){
             case 'settings':
@@ -575,6 +583,12 @@ class Settings extends Base {
                     echo '<option'.$selected.' value="'.$post_type.'">' . $post_type . '</option>';
                 }
                 echo '</select>';
+            break;
+            case 'radios':
+                foreach ( $args['options'] as $value => $label) {
+                    $checked = ($value == $this->options[$id] ? ' checked="checked"' : '');
+                    echo '<label><input '.$checked.' name="'.$this->optionGroup.'['.$id.']" type="radio" value="'.$value.'">' . $label . '</label>&nbsp;&nbsp;';
+                }
             break;
 
         }

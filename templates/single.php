@@ -1,9 +1,3 @@
-<?php
-    $specific_tours_list = array();
-    if(!empty($specific_tours)){
-        $specific_tours_list = explode(',', $specific_tours);
-    }
-?>
 <div class="booking-widget">
     <!-- ======================================================================
     == ITEM GADGET
@@ -13,39 +7,22 @@
 </div>
 <script type="text/javascript">
 
-      if (!String.prototype.startsWith) {
+    if (!String.prototype.startsWith) {
         String.prototype.startsWith = function(search, pos) {
-          return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
+            return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
         };
-      }
-
-      function formatPrices() {
-          console.log('formatted prices');
-          if(!!jQuery('.has-affiliate-link .tour-row-item .tour-row-item-occ').size()){
-              jQuery('.has-affiliate-link .tour-row-item .tour-row-item-occ').each(function(){
-                  jQuery(this).after(jQuery(this).clone().removeClass('tour-row-item-occ').addClass('tour-row-price'));
-              })
-          }
-      }
-
-
-      <?php if(!empty($specific_tours_list)): ?>
-
-    window.$toShow = <?php echo json_encode($specific_tours_list); ?>;
-    window.$neverShow = 'notCape Naturaliste Lighthouse';
-
-    function showRows(){
-      var table = jQuery('.priceGrid table');
-      table.find('tr').hide();
-      for (var i = 0; i < $toShow.length; i++) {
-        table.find('.roomName').each(function(){
-          if(jQuery(this).html().toLowerCase().startsWith($toShow[i].toLowerCase())
-            && !jQuery(this).html().toLowerCase().includes($neverShow.toLowerCase())){
-            jQuery(this).closest('tr').show();
-          }
-        })
-      }
     }
+
+    function formatPrices() {
+        console.log('formatted prices');
+        if(!!jQuery('.has-affiliate-link .tour-row-item .tour-row-item-occ').size()){
+            jQuery('.has-affiliate-link .tour-row-item .tour-row-item-occ').each(function(){
+                jQuery(this).after(jQuery(this).clone().removeClass('tour-row-item-occ').addClass('tour-row-price'));
+            })
+        }
+    }
+
+
 
     function sortTable(){
 
@@ -95,9 +72,6 @@
 
     }
 
-    <?php endif; ?>
-
-
 
     function removeHash () {
         history.pushState(
@@ -107,49 +81,6 @@
         );
     }
 
-    function prettyPhotoInit($, el){
-
-        var loading_animation = ($('body[data-loading-animation]').attr('data-loading-animation') != 'none') ? $('body').attr('data-loading-animation') : null ;
-        var ascend_loader = ($('body').hasClass('ascend')) ? '<span class="default-loading-icon spin"></span>' : '';
-        var ascend_loader_class = ($('body').hasClass('ascend')) ? 'default_loader ' : '';
-
-        el.prettyPhoto({
-            theme: 'dark_rounded',
-            allow_resize: true,
-            default_width: 690,
-            opacity: 0.85,
-            animation_speed: 'normal',
-            default_height: 388,
-            social_tools: '',
-            markup: '<div class="pp_pic_holder"> \
-                           <div class="ppt">&nbsp;</div> \
-                            <div class="pp_details"> \
-                                <div class="pp_nav"> \
-                                    <a href="#" class="pp_arrow_previous"> <i class="icon-salient-left-arrow-thin icon-default-style"></i> </a> \
-                                    <a href="#" class="pp_arrow_next"> <i class="icon-salient-right-arrow-thin icon-default-style"></i> </a> \
-                                    <p class="currentTextHolder">0/0</p> \
-                                </div> \
-                                <a class="pp_close" href="#"><span class="icon-salient-x icon-default-style"></span></a> \
-                            </div> \
-                            <div class="pp_content_container"> \
-                                <div class="pp_left"> \
-                                <div class="pp_right"> \
-                                    <div class="pp_content"> \
-                                        <div class="pp_fade"> \
-                                            <div class="pp_hoverContainer"> \
-                                            </div> \
-                                            <div id="pp_full_res"></div> \
-                                            <p class="pp_description"></p> \
-                                        </div> \
-                                    </div> \
-                                </div> \
-                                </div> \
-                            </div> \
-                        </div> \
-                        <div class="pp_loaderIcon ' + ascend_loader_class + loading_animation+'"> '+ascend_loader+' </div> \
-                        <div class="pp_overlay"></div>'
-        });
-    }
 
     function getCampaignID() {
 
@@ -267,7 +198,6 @@
                 vcID:<?php echo $vc_id ?>,
                 type:"<?php echo $type; ?>",
                 productID:<?php echo $operator_id; ?>
-                //<?php echo (!empty($specific_tours) ? ',specificTours: ['. $specific_tours . ']' : '') ?>
                 ,showFutureEvents:true
                 ,showFutureEventsPeriod:365
                 ,showAllAccom: true
@@ -288,12 +218,12 @@
               } else {
                 jQuery('#show-concessions-link').text('Show Concessions');
               }
-
             });
         }
 
 
         jQuery('head link[href="//gadgets.impartmedia.com/css/all.cssz"]').remove();
+        jQuery('head link[href="//gadgets-pvt.impartmedia.com/css/all.cssz"]').remove();
 
         copyBriefDescription = function(){
 
@@ -336,7 +266,6 @@
                 thumb_el.wrap('<a href="http:'+thumb_rel+'" rel="prettyPhoto[rooms]" title="'+title+'" class="roomLightbox"></a>')
             });
 
-            prettyPhotoInit(jQuery, jQuery(".priceGrid a[rel^='prettyPhoto']"));
 
             checkResponsivePriceGrid();
 
@@ -375,19 +304,6 @@
                 el.find('.total .left').append('<span class="showDetails">Details</span>');
                 jQuery(el.find('a')[0]).addClass('roomName')
 
-                el.find('.showDetails').qtip({
-                     content: {
-                         text: details
-                     },
-                     style: {
-                        classes: 'qtip-bootstrap qtip-pricing-details'
-                    },
-                    position: {
-                        my: 'top center',
-                        at: 'bottom center'
-                    }
-                 });
-
                 // Now move price out of and before button
                 var button = el.find('a.im-pricebutton');
                 var total = button.find('.im-pricebutton-amount').text().replace(',', '');
@@ -406,15 +322,6 @@
                 if(startTime.indexOf('12:00am') !== -1){
                     el.find('.start-time').hide();
                 }
-
-                /*
-                var title = jQuery(el).find('.roomName').text();
-                title = title.toLowerCase();
-
-                if(title.indexOf('pass') !== -1 || title.indexOf('combo') !== -1 || title.indexOf('self-guided') !== -1){
-                    el.find('.start-time').hide();
-                }
-                */
 
             });
 
@@ -461,21 +368,6 @@
                     }
                 }
 
-                if (prices_added) {
-                    collapsePrices();
-                }
-
-                if (descriptions_added) {
-                    copyBriefDescription();
-                }
-
-                if (typeof window.showRows !== "undefined") {
-                    showRows();
-                }
-
-                if (typeof window.sortTable !== "undefined") {
-                    sortTable();
-                }
 
             };
 
@@ -485,6 +377,7 @@
                 subtree: true
             });
         };
+
         setupObserver();
 
         fixMobilePriceGrid = function() {

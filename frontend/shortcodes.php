@@ -37,8 +37,11 @@ class ShortCodes extends Base {
     public function script(){
 
         if(!$this->scriptIncluded){
-            $this->scriptIncluded = true;
-            return '<script type="text/javascript" src="//gadgets.impartmedia.com/gadgets.jsz?key='.$this->api_key().'"></script>';
+            //$this->scriptIncluded = true;
+            return Template::get('templates/_script', [
+                'api_key' => $this->api_key(),
+                'environment' => isset($this->options['environment']) ? $this->options['environment'] : 'live',
+            ]);
         } 
         
         return '';
@@ -53,13 +56,13 @@ class ShortCodes extends Base {
         $this->load();
 
         if(empty($atts)){
-            $atts = array();
+            $atts = [];
         }
-        
-        $defaults = array(
-            'tours' => true, 
-            'accom' => true, 
-        );
+
+        $defaults = [
+            'tours' => true,
+            'accom' => true,
+        ];
 
         $data = array_merge($defaults, $this->options, $atts);
 
@@ -78,13 +81,12 @@ class ShortCodes extends Base {
     public function rooms($atts = array()){
         $this->load();
         
-        $defaults = array(
+        $defaults = [
             'type' => 'accom',
             'operator_id' => 0,
-        );
+        ];
 
         $data = array_merge($defaults, $this->options, $atts);
-
 
         $return = '';
         $return .= $this->script();
@@ -94,23 +96,26 @@ class ShortCodes extends Base {
     }
 
     /**
-     * Display the single member 
-     * 
-     * @param  array  $atts 
-     * @return String       
+     * Display the single member
+     *
+     * @param Array $atts
+     * @return String
      */
-    public function single($atts = array()){
+    public function single($atts = [])
+    {
+
         $this->load();
-        $atts = !empty($atts) ? $atts : array();
-        
-        $defaults = array(
-            'type' => 'accom',
-            'operator_id' => 0,
+        $atts = !empty($atts) ? $atts : [];
+
+        $content = new Content();
+
+        $defaults = [
+            'type' => $content->operator_type(),
+            'operator_id' => $content->operator_id(),
             'specific_tours' => false,
-        );
+        ];
 
         $data = array_merge($defaults, $this->options, $atts);
-
 
         $return = '';
         $return .= $this->script();
@@ -121,18 +126,18 @@ class ShortCodes extends Base {
 
     /**
      * Confirmation page
-     * @param  array $atts
-     * @return String       
+     * @param Array $atts
+     * @return String
      */
-    public function confirm($atts = array()){
+    public function confirm($atts = []){
         $this->load();
-        $atts = !empty($atts) ? $atts : array();
 
+        $atts = !empty($atts) ? $atts : [];
 
-        $defaults = array(
+        $defaults = [
             'pdf_link_text' => 'Download your itinerary PDF now.',
             'thank_you_text' => '',
-        );
+        ];
 
         $data = array_merge($defaults, $this->options, $atts);
 
@@ -148,18 +153,18 @@ class ShortCodes extends Base {
      * @param  array $atts
      * @return String       
      */
-    public function results($atts = array()){
+    public function results($atts = []){
         $this->load();
-        $atts = !empty($atts) ? $atts : array();
+        $atts = !empty($atts) ? $atts : [];
 
-        $defaults = array(
+        $defaults = [
             'period' => '3',
             'adults' => '2',
             'force_accom_type' => false,
             'platinum_partners_limit' => false,
             'default_region_loc' => false,
             'google_maps_api' => get_option('maps_api_key', ''),
-        );
+        ];
 
         if(!empty($atts['limit_locations'])){
             $atts['limit_locations'] = explode(',', $atts['limit_locations']);
@@ -179,15 +184,14 @@ class ShortCodes extends Base {
      * @param  array $atts
      * @return String
      */
-    public function packages($atts = array()){
+    public function packages($atts = []){
 
         $this->load();
-        $atts = !empty($atts) ? $atts : array();
+        $atts = !empty($atts) ? $atts : [];
 
-        $defaults = array(
+        $defaults = [
             'package_url' => '/package',
-        );
-
+        ];
 
         $data = array_merge($defaults, $this->options, $atts);
 
@@ -204,9 +208,9 @@ class ShortCodes extends Base {
      * @param  array  $atts
      * @return String
      */
-    public function package_details($atts = array()){
+    public function package_details($atts = []){
         $this->load();
-        $atts = !empty($atts) ? $atts : array();
+        $atts = !empty($atts) ? $atts : [];
 
         $defaults = array(
             'product_id' => !empty($_GET['pid']) ?  $_GET['pid'] : 0,
@@ -229,7 +233,7 @@ class ShortCodes extends Base {
      */
     public function tour_results($atts = array()){
         $this->load();
-        $atts = !empty($atts) ? $atts : array();
+        $atts = !empty($atts) ? $atts : [];
 
         $defaults = array(
             'period' => '1',

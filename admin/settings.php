@@ -15,7 +15,7 @@ class Settings extends Base {
 
 
     private $fields = [
-        'envrionment' => [
+        'environment' => [
             'type' => 'radios',
             'title' => 'Environment',
             'options' => [

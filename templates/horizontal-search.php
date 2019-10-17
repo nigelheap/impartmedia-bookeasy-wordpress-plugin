@@ -26,7 +26,8 @@ BE.gadget.cart("#toolbar-cart", {
     bookingURL:"<?php echo (isset($_SERVER['HTTP_HOST']) ? '//' .$_SERVER['HTTP_HOST'] : '' ) ?>/accommodation/book",
     autoCollapse:true
 });
-*/
+**/
+
 // load the search gadget, wait a moment otherwise gadget lib isnt loaded
 setTimeout(function(){
     $w(function() {

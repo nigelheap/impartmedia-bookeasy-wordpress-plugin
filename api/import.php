@@ -212,6 +212,7 @@ class Import extends Base {
         $operatorsWithNewDetails = 0;
         $newOperators = 0;
 
+
         foreach($arr as $mod){
 
             if(!empty($onlySync) && !in_array($mod['OperatorId'], $onlySync)){
@@ -277,6 +278,11 @@ class Import extends Base {
                 $newOperators++;
             }
 
+            //force all
+            //$imageUpdate[] = $mod['OperatorId'];
+            //$dataUpdate[] = $mod['OperatorId'];
+            //$toLoad[] = $mod['OperatorId'];
+
             $this->modDates[$mod['OperatorId']] = $mod;
         }
 
@@ -287,6 +293,8 @@ class Import extends Base {
         $toLoad = array_unique($toLoad);
         $dataUpdate = array_unique($dataUpdate);
         $imageUpdate = array_unique($imageUpdate);
+
+        
 
         $this->log(print_r([
             'operators' => $toLoad,
@@ -300,6 +308,8 @@ class Import extends Base {
             'operators with new details' => $operatorsWithNewDetails,
             'new operators' => $newOperators,
         ], true));
+
+        
 
 
         //Operators info
@@ -332,8 +342,10 @@ class Import extends Base {
             $arr['Operators'] = array_merge($arr['Operators'], $result['Operators']);
         }
 
+
         $include_locations = [];
         $location_ids = trim($this->options['location_ids']);
+        
         if(!empty($location_ids)){
             $include_locations = explode(',', $location_ids);
         }
@@ -423,7 +435,13 @@ class Import extends Base {
     
                 // something happed??
                 if( is_wp_error( $inserted_id ) ) {
-                    return $inserted_id->get_error_message();
+
+                    $this->log(print_r([
+                        'title' => $post_title,
+                        'error' => $inserted_id->get_error_message(),
+                    ], true));
+                    
+                    //continue;
                 }
 
             } elseif(!empty($post_id)) {
@@ -472,6 +490,8 @@ class Import extends Base {
     
                     update_post_meta($inserted_id, $this->postmetaPrefix . '_' . $opKey, $opItem);
                 }
+
+                //delete_post_meta($inserted_id, '_views_template');
 
                 update_post_meta($inserted_id, $this->postmetaPrefix . '_DetailsModDate', $this->modDates[$operatorId]['DetailsModDate']);
 
@@ -541,7 +561,7 @@ class Import extends Base {
         $json['end_time'] = $endTime;
 
         if(PHP_SAPI == 'cli'){
-            return implode(PHP_EOL, $json);
+            return implode(PHP_EOL, $message);
         } 
 
         return json_encode($json);
@@ -554,9 +574,10 @@ class Import extends Base {
      * @param $inserted_id
      * @param $image_update_count
      * @param $post_title
+     * @param $forced
      * @return int
      */
-    private function images($op, $operatorId, $inserted_id, &$image_update_count, $post_title)
+    private function images($op, $operatorId, $inserted_id, &$image_update_count, $post_title, $forced)
     {
 
         $imageCount = 0;

@@ -47,7 +47,6 @@ class Base {
      * Work out the api key for the frontend
      */
     public function api_key(){
-        
         if(empty($this->options)){
             $this->load_vars();
         }

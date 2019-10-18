@@ -206,8 +206,8 @@ class Settings extends Base {
 
     public function admin_enqueue_scripts(){
         // Add our CSS Styling
-        wp_enqueue_style( 'bookeasy-options', plugins_url('../css/bookeasy-options.css', __FILE__), array(), false, false);
-        wp_enqueue_script( 'bookeasy-options', plugins_url('../js/bookeasy-options.js', __FILE__), array(), false, false);
+        wp_enqueue_style( 'bookeasy-options', plugins_url('../css/admin.css', __FILE__), array(), false, false);
+        wp_enqueue_script( 'bookeasy-options', plugins_url('../js/admin.js', __FILE__), array(), false, false);
 
         wp_localize_script( 'bookeasy-options', 'bookeasyAjax', array( 'ajaxurl' => admin_url( 'admin-ajax.php' )));   
     }

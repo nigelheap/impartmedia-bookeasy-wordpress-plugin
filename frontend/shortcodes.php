@@ -12,22 +12,22 @@ class ShortCodes extends Base {
      * Start up
      */
     public function __construct(){
-        add_shortcode('bookeasy_horizontal_search', array($this, 'horizontal_search'));
-        add_shortcode('bookeasy_single', array($this, 'single'));
-        add_shortcode('bookeasy_results', array($this, 'results'));
+        add_shortcode('bookeasy_horizontal_search', [$this, 'horizontal_search']);
+        add_shortcode('bookeasy_single', [$this, 'single']);
+        add_shortcode('bookeasy_results', [$this, 'results']);
 
-        add_shortcode('bookeasy_packages', array($this, 'packages'));
-        add_shortcode('bookeasy_package_details', array($this, 'package_details'));
+        add_shortcode('bookeasy_packages', [$this, 'packages']);
+        add_shortcode('bookeasy_package_details', [$this, 'package_details']);
 
-        add_shortcode('bookeasy_tour_results', array($this, 'tour_results'));
-        add_shortcode('bookeasy_cart', array($this, 'cart'));
-        add_shortcode('bookeasy_book', array($this, 'book'));
-        add_shortcode('bookeasy_rooms', array($this, 'rooms'));
-        add_shortcode('bookeasy_confirm', array($this, 'confirm'));
-        add_shortcode('bookeasy_script', array($this, 'script'));
+        add_shortcode('bookeasy_tour_results', [$this, 'tour_results']);
+        add_shortcode('bookeasy_cart', [$this, 'cart']);
+        add_shortcode('bookeasy_book', [$this, 'book']);
+        add_shortcode('bookeasy_rooms', [$this, 'rooms']);
+        add_shortcode('bookeasy_confirm', [$this, 'confirm']);
+        add_shortcode('bookeasy_script', [$this, 'script']);
 
         //#todo need to remove this one day when we make logical changes to tour plugin 
-        add_shortcode('bookeasy_platinum_partners', array($this, 'platinum_partners'));
+        add_shortcode('bookeasy_platinum_partners', [$this, 'platinum_partners']);
     }
 
     /**
@@ -36,13 +36,17 @@ class ShortCodes extends Base {
      */
     public function script(){
 
+
         if(!$this->scriptIncluded){
+            
             //$this->scriptIncluded = true;
+            
             return Template::get('templates/_script', [
                 'api_key' => $this->api_key(),
                 'environment' => isset($this->options['environment']) ? $this->options['environment'] : 'live',
             ]);
         } 
+
         
         return '';
     }
@@ -52,7 +56,8 @@ class ShortCodes extends Base {
      *
      * @return String 
      */
-    public function horizontal_search($atts){
+    public function horizontal_search($atts)
+    {
         $this->load();
 
         if(empty($atts)){
@@ -71,16 +76,17 @@ class ShortCodes extends Base {
         $return .= Template::get('templates/horizontal-search', $data);
 
         return $return;
-    }    
+    }
 
     /**
      * Return rooms template
-     * @param  array  $atts 
-     * @return String       
+     * @param  array  $atts
+     * @return String
      */
-    public function rooms($atts = array()){
+    public function rooms($atts = []){
+
         $this->load();
-        
+
         $defaults = [
             'type' => 'accom',
             'operator_id' => 0,
@@ -129,7 +135,8 @@ class ShortCodes extends Base {
      * @param Array $atts
      * @return String
      */
-    public function confirm($atts = []){
+    public function confirm($atts = [])
+    {
         $this->load();
 
         $atts = !empty($atts) ? $atts : [];
@@ -151,10 +158,13 @@ class ShortCodes extends Base {
     /**
      * List bookeasy results
      * @param  array $atts
-     * @return String       
+     * @return String
      */
-    public function results($atts = []){
+    public function results($atts = [])
+    {
         $this->load();
+
+
         $atts = !empty($atts) ? $atts : [];
 
         $defaults = [
@@ -229,19 +239,19 @@ class ShortCodes extends Base {
     /**
      * Listing only the tour results
      * @param  array $atts
-     * @return String       
+     * @return String
      */
-    public function tour_results($atts = array()){
+    public function tour_results($atts = []){
         $this->load();
         $atts = !empty($atts) ? $atts : [];
 
-        $defaults = array(
+        $defaults = [
             'period' => '1',
             'adults' => '1',
             'force_tour_type' => false,
             'default_region_loc' => false,
             'google_maps_api' => get_option('maps_api_key', ''),
-        );
+        ];
 
         if(!empty($atts['limit_locations'])){
             $atts['limit_locations'] = explode(',', $atts['limit_locations']);
@@ -263,10 +273,11 @@ class ShortCodes extends Base {
      * @param  array $atts
      * @return String       
      */
-    public function platinum_partners($atts = array()){
+    public function platinum_partners($atts = [])
+    {
         $this->load();
 
-        $atts = !empty($atts) ? $atts : array();
+        $atts = !empty($atts) ? $atts : [];
 
         $data = array_merge($this->options, $atts);
 
@@ -284,10 +295,11 @@ class ShortCodes extends Base {
      * @param  array $atts
      * @return String
      */
-    public function hide_operators($atts = array()){
+    public function hide_operators($atts = [])
+    {
         $this->load();
 
-        $atts = !empty($atts) ? $atts : array();
+        $atts = !empty($atts) ? $atts : [];
 
         $data = array_merge($this->options, $atts);
 
@@ -303,11 +315,12 @@ class ShortCodes extends Base {
     /**
      * Booking link
      * @param  array $atts
-     * @return String       
+     * @return String
      */
-    public function book($atts = array()){
+    public function book($atts = [])
+    {
         $this->load();
-        $atts = !empty($atts) ? $atts : array();
+        $atts = !empty($atts) ? $atts : [];
 
         $defaults = array(
             'booked_by' => 'Online',
@@ -325,22 +338,22 @@ class ShortCodes extends Base {
 
     /**
      * The cart page
-     * @param  array  $atts 
-     * @return String       
+     * @param  array  $atts
+     * @return String
      */
-    public function cart($atts = array()){
+    public function cart($atts = [])
+    {
         $this->load();
 
         if(empty($atts)){
-            $atts = array();
+            $atts = [];
         }
-        
+
         $defaults = array(
             'cart_id' => 'toolbar-cart',
         );
 
         $data = array_merge($defaults, $this->options, $atts);
-
 
         $return = '';
         $return .= $this->script();

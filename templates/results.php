@@ -7,7 +7,6 @@ $w(function() {
         period:"<?php echo $period ?>",
         adults:"<?php echo $adults ?>",
         <?php if(!empty($force_accom_type)): ?>forceAccomType: "<?php echo $force_accom_type; ?>",<?php endif; ?>
-
         <?php if(!empty($limit_locations) && is_array($limit_locations)): ?>limitLocations : <?php echo json_encode($limit_locations); ?>,<?php endif; ?>
         <?php if(!empty($default_region_loc)): ?>defaultRegionLoc : "<?php echo $default_region_loc; ?>",<?php endif; ?>
         <?php if(!empty($google_maps_api)): ?>googleMapsKey : "<?php echo $google_maps_api; ?>",<?php endif; ?>
@@ -22,15 +21,14 @@ $w(function() {
         showLocationFilter:true,
         ignoreSearchCookie:false,
         itemDetailPageURL:"/members/{url}",
-        scriptCustomURLs:"/accommodation/script/customurls",
+        //scriptCustomURLs:"/accommodation/script/customurls",
         enableRegionSearch:false,
 	    disabledTypes:["events", "carhire", "packages", "tours"]
     });
-    jQuery('head link[href="//gadgets.impartmedia.com/css/all.cssz"]').remove();
-
 
 });
 </script>
+
 <?php echo \Bookeasy\library\Template::get('templates/_results_adjustments'); ?>
 <?php echo  \Bookeasy\library\Template::get('templates/_platinum_partners', array(
     'platinum_partners_limit' => $platinum_partners_limit,

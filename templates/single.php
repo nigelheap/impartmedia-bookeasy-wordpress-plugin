@@ -7,11 +7,6 @@
 </div>
 <script type="text/javascript">
 
-    if (!String.prototype.startsWith) {
-        String.prototype.startsWith = function(search, pos) {
-            return this.substr(!pos || pos < 0 ? 0 : +pos, search.length) === search;
-        };
-    }
 
     function formatPrices() {
         console.log('formatted prices');
@@ -21,8 +16,6 @@
             })
         }
     }
-
-
 
     function sortTable(){
 
@@ -73,32 +66,11 @@
     }
 
 
-    function removeHash () {
-        history.pushState(
-            "",
-            document.title,
-            window.location.pathname + window.location.search
-        );
-    }
-
-
-    function getCampaignID() {
-
-        var windowHash = window.location.hash;
-        var count = windowHash.match(/\//g);
-        var $campaignID = "";
-
-        if (count != null && count.length == 3 ) {
-
-            var $hashValue = window.location.hash;
-            var $strLastPos = $hashValue.lastIndexOf("/")+1;
-            $campaignID = $hashValue.slice($strLastPos, $hashValue.length);
-        }
-        return $campaignID;
-    }
     var campaignID =  getCampaignID();
-    if ( campaignID != "") currentNights=2; // force two nights for campaigns
-    // reassign default BE cookie when browsing between areas
+    if ( campaignID != ""){
+        currentNights = 2;
+    }
+
     var currentCookieObject = $w.json.parse($w.cookie(BE.util.cookieName()));
     var currentNights = "1";
     var currentAdults = "1";
@@ -119,10 +91,9 @@
 
     $w(function() {
 
-
-        <?php if(!empty($_GET['bookingdate'])): 
-            $newDate = strtotime($_GET['bookingdate']);
-        ?>
+            <?php if(!empty($_GET['bookingdate'])): 
+                $newDate = strtotime($_GET['bookingdate']);
+            ?>
 
             var currentCookieObject = $w.json.parse($w.cookie(BE.util.cookieName()));
             var hasCurrentCookieObject = (typeof currentCookieObject  === 'object');
@@ -148,82 +119,65 @@
                 };
             }
 
-
             $w.cookie(BE.util.cookieName(),$w.json.stringify(tmpUserState));
         
         <?php endif; ?>
 
-
         // call the gadget with the correct campaign settings
-
         if (campaignID != null && campaignID != "" ) {
+
             BE.gadget.details("#itemGadget",{
                 vcID:<?php echo $vc_id ?>,
                 type:"<?php echo $type; ?>",
-                productID:<?php echo $operator_id; ?>
-                //<?php echo (!empty($specific_tours) ? ',specificTours: ['. $specific_tours . ']' : '') ?>
-                ,campaignID: campaignID
-                ,showFutureEvents:true
-                //,showFutureEventsPeriod:365
-                ,showAllAccom: true
-                ,showAllTours: true
-                ,showHoverInline: true
-                ,showHoverInlineToggleButtonContent: "More info"
+                productID:<?php echo $operator_id; ?>,
+                campaignID: campaignID,
+                showFutureEvents:true,
+                showAllAccom: true,
+                showAllTours: true,
+                showHoverInline: true,
+                showHoverInlineToggleButtonContent: "More info"
             });
+
         } else {
 
             removeHash();
 
             <?php if($type == 'tours'): ?>
 
-            BE.gadget.details("#itemGadget",{
-                vcID:<?php echo $vc_id ?>,
-                type:"<?php echo $type; ?>",
-                productID:<?php echo $operator_id; ?>
-                //,showFutureEvents:true
-                //,showFutureEventsPeriod:365
-                //<?php echo (!empty($specific_tours) ? ',specificTours: ['. $specific_tours . ']' : '') ?>
-                ,period:2
-                ,adults:2
-                ,showAllAccom: true
-                ,showAllTours: true
-                ,showHoverInline: true
-                ,collapseToursMode: true
-                ,showHoverInlineToggleButtonContent: "More info"
-            });
+                BE.gadget.details("#itemGadget",{
+                    vcID:<?php echo $vc_id ?>,
+                    type:"<?php echo $type; ?>",
+                    productID:<?php echo $operator_id; ?>,
+                    period:2,
+                    adults:2,
+                    showAllAccom: true,
+                    showAllTours: true,
+                    showHoverInline: true,
+                    collapseToursMode: true,
+                    showHoverInlineToggleButtonContent: "More info"
+                });
 
             <?php else: ?>
 
-            BE.gadget.details("#itemGadget",{
-                vcID:<?php echo $vc_id ?>,
-                type:"<?php echo $type; ?>",
-                productID:<?php echo $operator_id; ?>
-                ,showFutureEvents:true
-                ,showFutureEventsPeriod:365
-                ,showAllAccom: true
-                ,showAllTours: true
-                ,showHoverInline: true
-                ,showHoverInlineToggleButtonContent: "More info"
-            });
+                BE.gadget.details("#itemGadget",{
+                    vcID:<?php echo $vc_id ?>,
+                    type:"<?php echo $type; ?>",
+                    productID:<?php echo $operator_id; ?>,
+                    showFutureEvents:true,
+                    showFutureEventsPeriod:365,
+                    showAllAccom: true,
+                    showAllTours: true,
+                    showHoverInline: true,
+                    showHoverInlineToggleButtonContent: "More info"
+                });
 
             <?php endif; ?>
 
             jQuery('.infants, .concessions, .students, .observers, .family').wrapAll('<div class="concession-type"></div>');
             jQuery(".children").after('<a id="show-concessions-link" style="cursor:pointer;">Show Concessions</a>');
-            jQuery('.concession-type').hide();
-            jQuery('.booking-widget').on('click', '#show-concessions-link', function() {
-              jQuery(this).next('.concession-type').toggle();
-              if (jQuery('.concession-type').is(':visible')) {
-                jQuery('#show-concessions-link').text('Hide Concessions');
-              } else {
-                jQuery('#show-concessions-link').text('Show Concessions');
-              }
-            });
+
         }
 
-
-        jQuery('head link[href="//gadgets.impartmedia.com/css/all.cssz"]').remove();
-        jQuery('head link[href="//gadgets-pvt.impartmedia.com/css/all.cssz"]').remove();
 
         copyBriefDescription = function(){
 
@@ -247,7 +201,7 @@
 
                     var first_sentence = description_split.splice(0,1).join("");
                     var remainder = description_split.join("");
-                    
+
                 } else {
 
                     var description_words = description.split(" ");
@@ -258,12 +212,6 @@
                 jQuery(el).find('.OperatorInfoMore').before('<div class="briefDescription">' + first_sentence + '...</div>');
                 jQuery(el).find('.OperatorInfo .Description .OperatorItemContent').text(remainder);
 
-                // Room image lightbox
-                var thumb_el = jQuery(el).find('.thumb img');
-                var thumb_rel = thumb_el.attr('rel');
-                var title = jQuery(jQuery(el).find('a')[0]).text();
-                thumb_el.removeAttr('rel');
-                thumb_el.wrap('<a href="http:'+thumb_rel+'" rel="prettyPhoto[rooms]" title="'+title+'" class="roomLightbox"></a>')
             });
 
 
@@ -280,6 +228,7 @@
 
             // Get header dates
             var dates = [];
+
             jQuery('.priceGrid thead tr').each(function(){
                 jQuery(this).find('td.date').each(function(){
                     var el = jQuery(this);
@@ -293,13 +242,16 @@
 
             // For each row in table, grab all the prices and chuck them into a details popup
             jQuery('.priceGrid tbody tr').each(function(){
+
                 var el = jQuery(this);
                 var details = '';
+
                 jQuery(el).find('.price').each(function(idx){
                     var date = dates[idx];
                     var price = jQuery(this).text();
                     details += '<div><span class="date">' + date + '</span><span class="price">' + price + '</span></div>';
                 });
+
                 el.find('.total').prepend('<div class="left">');
                 el.find('.total .left').append('<span class="showDetails">Details</span>');
                 jQuery(el.find('a')[0]).addClass('roomName')
@@ -340,11 +292,10 @@
                 return;
             }
 
-            // Watch #itemGadget's children
-            // to detect when .priceGrid appears
             var grid = jQuery('#itemGadget')[0];
 
             callback = function(mutations){
+
                 var prices_added = false;
                 var descriptions_added = false;
 

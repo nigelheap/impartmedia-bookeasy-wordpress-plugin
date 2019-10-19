@@ -261,76 +261,70 @@ class Settings extends Base {
                 <div class="inner">
                     <h3>Short Codes</h3>
                     <div class="inner-inner">
-                    <h2>Horizonal Search</h2>
-                    <p>
-                        <pre><code>[bookeasy_horizontal_search]</code></pre>
-                        <pre><code>[bookeasy_horizontal_search tours="true" accom="true" tours_tabname="Tours" accom_tabname="Accom" accom_search_path="/accommodation" ]</code></pre>
-                        <pre><code>[bookeasy_horizontal_search tours_tabname="Tours" tours_search_path="/accommodation"]</code></pre>
-                        <br>
-                    </p>
-
-                    <h2>Single item</h2>
-                    <p>
-                        This will pick up the tour/accom type based on meta data in the post
-                        <pre><code>[bookeasy_single]</code></pre>
-                    </p>
-
-                    <h2>Accom Results</h2>
-                    <p>
-                        <pre><code>[bookeasy_results]</code></pre>
-                        <div>note: defaults to period = 3 and adults = 2</div>
-                        <pre><code>[bookeasy_results period="3" adults="2"]</code></pre>
-                        <pre><code>[bookeasy_results force_accom_type="Chalets/Villas/Cottages"]</code></pre>
-                        <pre><code style="word-break: break-all;">[bookeasy_results limit_locations="Augusta,Busselton,Carbunup River,Cowaramup,Dunsborough,Gnarabup,Gracetown,Hamelin Bay,Karridale,Margaret River,Metricup,Prevelly,Rosa Brook,Witchcliffe,Yallingup"]</code></pre>
-                        <br>
-                    </p>
-
-                    <h2>Tour Results</h2>
-                    <p>
-                        <pre><code>[bookeasy_tour_results]</code></pre>
-                        <div>note: defaults to period = 1 and adults = 1</div>
-                        <pre><code>[bookeasy_tour_results period="1" adults="2"]</code></pre>
-                        <pre><code>[bookeasy_tour_results force_tour_type="Whale Watching"]</code></pre>
-                        <br>
-                    </p>
-
-                    <h2>Cart</h2>
-                    <p>
-                        <pre><code>[bookeasy_cart]</code></pre>
-                        <br>
-                    </p>
-
-                    <h2>Booking page</h2>
-                    <p>
-                        <pre><code>[bookeasy_book]</code></pre>
-                        <pre><code>[bookeasy_book booked_by="Online"]</code></pre>
-                        <br>
-                    </p>
-
-                    <h2>Confirmation page</h2>
-                    <p>
-                        <pre><code>[bookeasy_confirm]</code></pre>
-                        <pre><code>[bookeasy_confirm pdf_link_text="Download your itinerary PDF now."]</code></pre>
-                        <pre><code>[bookeasy_confirm thank_you_text=""]</code></pre>
-                        <br>
-                    </p>
-
-                    <h2>Platinum Partner fixes</h2>
+                        <h2>Horizonal Search</h2>
                         <p>
-                        <pre><code>[bookeasy_platinum_partners]</code></pre>
-                        <br>
-                    </p>
+                            <pre><code>[bookeasy_horizontal_search]</code></pre>
+                            <pre><code>[bookeasy_horizontal_search tours="true" accom="true" tours_tabname="Tours" accom_tabname="Accom" accom_search_path="/accommodation" ]</code></pre>
+                            <pre><code>[bookeasy_horizontal_search tours_tabname="Tours" tours_search_path="/accommodation"]</code></pre>
+                            <br>
+                        </p>
+
+                        <h2>Single item</h2>
+                        <p>
+                            This will pick up the tour/accom type based on meta data in the post
+                            <pre><code>[bookeasy_single]</code></pre>
+                            <br>
+                        </p>
+
+                        <h2>Accom Results</h2>
+                        <p>
+                            <pre><code>[bookeasy_results]</code></pre>
+                            <div>note: defaults to period = 3 and adults = 2</div>
+                            <pre><code>[bookeasy_results period="3" adults="2"]</code></pre>
+                            <pre><code>[bookeasy_results force_accom_type="Chalets/Villas/Cottages"]</code></pre>
+                            <pre><code style="word-break: break-all;">[bookeasy_results limit_locations="Augusta,Busselton,Carbunup River,Cowaramup,Dunsborough,Gnarabup,Gracetown,Hamelin Bay,Karridale,Margaret River,Metricup,Prevelly,Rosa Brook,Witchcliffe,Yallingup"]</code></pre>
+                            <br>
+                        </p>
+
+                        <h2>Tour Results</h2>
+                        <p>
+                            <pre><code>[bookeasy_tour_results]</code></pre>
+                            <div>note: defaults to period = 1 and adults = 1</div>
+                            <pre><code>[bookeasy_tour_results period="1" adults="2"]</code></pre>
+                            <pre><code>[bookeasy_tour_results force_tour_type="Whale Watching"]</code></pre>
+                            <br>
+                        </p>
+
+                        <h2>Cart</h2>
+                        <p>
+                            <pre><code>[bookeasy_cart]</code></pre>
+                            <br>
+                        </p>
+
+                        <h2>Booking page</h2>
+                        <p>
+                            <pre><code>[bookeasy_book]</code></pre>
+                            <pre><code>[bookeasy_book booked_by="Online"]</code></pre>
+                            <br>
+                        </p>
+
+                        <h2>Confirmation page</h2>
+                        <p>
+                            <pre><code>[bookeasy_confirm]</code></pre>
+                            <pre><code>[bookeasy_confirm pdf_link_text="Download your itinerary PDF now."]</code></pre>
+                            <pre><code>[bookeasy_confirm thank_you_text=""]</code></pre>
+                            <br>
+                        </p>
 
                     </div>
                     <h3>Helpers</h3>
                     <div class="inner-inner">
-                    <p>
-                        ... Soon
-                        <pre><code>$rooms = Bookeasy_Helpers::rooms($operatorID, get_the_ID());</code></pre>
-                        <br />
-                        <br />
-
-                    </p>
+                        <p>
+                            ... Soon
+                            <pre><code>$rooms = Bookeasy_Helpers::rooms($operatorID, get_the_ID());</code></pre>
+                            <br />
+                            <br />
+                        </p>
                     </div>
                 </div>
             </div>

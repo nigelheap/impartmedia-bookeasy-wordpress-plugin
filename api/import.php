@@ -491,8 +491,6 @@ class Import extends Base {
                     update_post_meta($inserted_id, $this->postmetaPrefix . '_' . $opKey, $opItem);
                 }
 
-                //delete_post_meta($inserted_id, '_views_template');
-
                 update_post_meta($inserted_id, $this->postmetaPrefix . '_DetailsModDate', $this->modDates[$operatorId]['DetailsModDate']);
 
                 //set the cats if we need to
@@ -559,6 +557,11 @@ class Import extends Base {
         $json['updated_images'] = $image_update_count;
         $json['start_time'] = $startedTime;
         $json['end_time'] = $endTime;
+
+        if(isset($forced) && isset($op) && $forced){
+            $json['single'] = $op;
+        }
+
 
         if(PHP_SAPI == 'cli'){
             return implode(PHP_EOL, $message);

@@ -15,10 +15,6 @@
     }
 }
 
-.search-gadget:hover .button a {
-    background-color: #f15b43
-}
-
 .search-gadget .date,
 .search-gadget .product,
 .search-gadget .period,
@@ -108,8 +104,6 @@
 .search-gadget select,
 .search-gadget .pseudo {
     width: 100%;
-    border: 0;
-    padding: .5em;
     outline: 0;
     background-color: #fff;
     height: 50px;
@@ -117,7 +111,7 @@
     border: 1px solid #d2cfce !important;
     font-size: 1.2em;
     font-weight: bold;
-    padding-left: 16px;
+    padding: .5em .5em .5em 16px;
     transition: padding ease-in-out .4s
 }
 
@@ -151,14 +145,13 @@
 }
 
 .search-gadget .button {
-    display: none;
     cursor: pointer
 }
 
 .search-gadget .button a {
     display: block;
     text-align: center;
-    background-color: #000;
+    background-color: #f04670;
     border-radius: 3px;
     width: 100%;
     border: 0;
@@ -168,11 +161,12 @@
     font-size: 11px;
     font-weight: bold;
     cursor: pointer;
-    transition: background-color ease-in-out .4s
+    transition: background-color ease-in-out .4s;
+    margin-bottom: 0.5em;
 }
 
 .search-gadget .button a:hover {
-    background-color: #f15b43
+    background-color: #932d46
 }
 
 .search-gadget .showHideRefineTools {
@@ -411,7 +405,6 @@
     border-radius: 3px;
     border: 0;
     text-transform: uppercase;
-    padding: 1em 3em;
     color: #fff;
     font-size: 11px;
     font-weight: bold;
@@ -1509,12 +1502,9 @@
 .cartInOverlay .total span {
     margin-top: -12px;
     width: 25%;
-    position: absolute;
     right: 30px;
     font-size: 28px;
-    text-align: right;
     color: #222;
-    font-weight:400;
 }
 
 .shopping-cart .remove a,
@@ -1868,8 +1858,7 @@
     display: inline;
     vertical-align: middle;
     position: relative;
-    top: 10px;
-    left: -20px;
+    top: 8px;
     padding-left: 15px;
 }
 
@@ -1943,13 +1932,13 @@
 
 .booking-gadget label, .booking-gadget .label {
     display: block;
-    font-size: .8em
+    font-size: .8em;
+    margin-bottom: 0.5em;
 }
 
 .booking-gadget input, .booking-gadget textarea, .booking-gadget select,
 .booking-gadget .pseudo {
     width: 100%;
-    border: 0;
     padding: .5em;
     outline: 0;
     background-color: #ececec;
@@ -1957,7 +1946,6 @@
     border-radius: 3px;
     font-size: 1.2em;
     font-weight: bold;
-    padding-left: 16px;
     transition: padding ease-in-out .4s
 }
 
@@ -2044,6 +2032,10 @@
     border-bottom-color: #222;
     border-width: 8px;
     margin-left: -8px
+}
+
+.expirySelects{
+    display: flex;
 }
 
 @media(min-width:722px) {
@@ -2159,7 +2151,6 @@
     }
 
 }
-
 
 #wdOverlayContent #wdOverlayClose {
     position: absolute;
@@ -2380,6 +2371,31 @@
     display: inline;
 }
 
+.search-gadget.hasTabs{
+    margin-top: 40px;
+}
+
+.search-gadget .hybridTabs{
+    padding: 0 10px;
+    margin-bottom: 0.5em;
+    position: absolute;
+    top: -29px;
+}
+
+.search-gadget .hybridTabs .tab{
+    background: #ccc;
+    color: rgba(1,0,12,0.8);
+    border-radius: 5px 5px 0 0;
+    padding: 0.5em;
+    margin-right: 10px;
+    cursor: pointer;
+}
+
+.search-gadget .hybridTabs .tab.current{
+
+    background: rgba(1,0,12,0.8);
+    color: #fff;
+}
 
 @media(min-width:722px) {
 

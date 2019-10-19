@@ -78,7 +78,8 @@
     if ( currentCookieObject != null && currentCookieObject.product != "accom" ) {
 
         var tmpUserState = {
-            product:"accom",
+            product: '<?php echo $operator_id; ?>',
+            type:"<?php echo $type; ?>",
             period:currentNights,
             adults:currentAdults,
             children:"0",
@@ -110,7 +111,8 @@
                 };
             } else {
                 tmpUserState = {
-                    product: 'accom',
+                    product: '<?php echo $operator_id; ?>',
+                    type:"<?php echo $type; ?>",
                     period: 1,
                     adults: 1,
                     children: "0",

@@ -11,6 +11,7 @@
     <script type="text/javascript" src="//gadgets-pvt.impartmedia.com/gadgets.jsz?key=<?php echo $api_key; ?>"></script>
 <?php else: ?>
     <script>
+    BEcssOverride = "none"; // none | minimal
     BEurlsOverride = {
         cdn:function() { return "//gadgets.impartmedia.com/"; },
         sjp:function() { return "//sjp.impartmedia.com/"; },

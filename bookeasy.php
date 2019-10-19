@@ -12,7 +12,7 @@ Author URI: http://www.nigelheap.com
 
 
 define('BOOKEASY_PLUGIN', 'bookeasy');
-define('BOOKEASY_VERSION', '2.0.1');
+define('BOOKEASY_VERSION', '2.7.1');
 define('BOOKEASY_ENDPOINT', 'https://webapi.bookeasy.com.au');
 define('BOOKEASY_ENDPOINT_PVT', 'https://webapi-pvt.bookeasy.com.au');
 define('BOOKEASY_VISIBLEOPERATORS', '/api/getVcOperatorIds?q=[vc_id]');
@@ -39,7 +39,6 @@ require_once dirname(__FILE__) .  '/admin/settings.php';
 
 //api
 require_once dirname(__FILE__) .  '/api/import.php';
-require_once dirname(__FILE__) .  '/api/endpoint.php';
 
 //front end stuff
 require_once dirname(__FILE__) .  '/frontend/content.php';
@@ -48,7 +47,6 @@ require_once dirname(__FILE__) .  '/frontend/helpers.php';
 
 
 new \Bookeasy\api\Import();
-new \Bookeasy\api\Endpoint();
 
 new \Bookeasy\frontend\ShortCodes();
 new \Bookeasy\frontend\Helpers();

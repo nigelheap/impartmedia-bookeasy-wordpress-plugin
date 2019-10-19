@@ -264,13 +264,15 @@ class Settings extends Base {
                     <h2>Horizonal Search</h2>
                     <p>
                         <pre><code>[bookeasy_horizontal_search]</code></pre>
+                        <pre><code>[bookeasy_horizontal_search tours="true" accom="true" tours_tabname="Tours" accom_tabname="Accom" accom_search_path="/accommodation" ]</code></pre>
+                        <pre><code>[bookeasy_horizontal_search tours_tabname="Tours" tours_search_path="/accommodation"]</code></pre>
                         <br>
                     </p>
 
                     <h2>Single item</h2>
                     <p>
+                        This will pick up the tour/accom type based on meta data in the post
                         <pre><code>[bookeasy_single]</code></pre>
-                        <br>
                     </p>
 
                     <h2>Accom Results</h2>

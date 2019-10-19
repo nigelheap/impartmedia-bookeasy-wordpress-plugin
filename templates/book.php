@@ -6,23 +6,6 @@
         <h3>Finalising payment</h3>
         <p>Please do not refresh the page during this process</p>
     </div>
-    <div class="booking-loading" id="booking-loading" style="display: none;">
-        <div class="loading-animation">
-            <div class="mr-loading">
-                <div class="mr-loading-icon">
-                    <div class="mr-folding-cube">
-                        <div class="mr-cube1 mr-cube"></div>
-                        <div class="mr-cube2 mr-cube"></div>
-                        <div class="mr-cube4 mr-cube"></div>
-                        <div class="mr-cube3 mr-cube"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="loading-text">
-                Loading...
-            </div>
-        </div>
-    </div>
 </div>
 <script type="text/javascript">
 
@@ -33,8 +16,6 @@ $w(function() {
         confirmationURL: "<?php echo $confirmationurl ?>",
         bookedBy: '<?php echo $booked_by ?>'
     });
-
-    jQuery('head link[href="//gadgets.impartmedia.com/css/all.cssz"]').remove();
 
     setTimeout(function(){
         jQuery('.item.accom').each(function() {
@@ -69,14 +50,7 @@ $w(function() {
     });
 
 
-    jQuery('#booking-loading').show();
 
-    var checkLoading = setInterval(function(){
-        if(jQuery('.personalDetails, .noItems').size() > 0){
-          jQuery('#booking-loading').hide();
-          clearInterval(checkLoading);
-        }
-    }, 500);
 
 
 });

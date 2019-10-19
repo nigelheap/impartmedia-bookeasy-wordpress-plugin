@@ -46,6 +46,8 @@ class Content extends Base {
             return 'accom';
         }
 
+
+
         foreach($operator_types as $type)
         {
             if($type['TypeName'] == 'Accommodation'){

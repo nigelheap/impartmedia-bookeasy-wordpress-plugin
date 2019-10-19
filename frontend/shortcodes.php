@@ -22,7 +22,6 @@ class ShortCodes extends Base {
         add_shortcode('bookeasy_tour_results', [$this, 'tour_results']);
         add_shortcode('bookeasy_cart', [$this, 'cart']);
         add_shortcode('bookeasy_book', [$this, 'book']);
-        add_shortcode('bookeasy_rooms', [$this, 'rooms']);
         add_shortcode('bookeasy_confirm', [$this, 'confirm']);
         add_shortcode('bookeasy_script', [$this, 'script']);
 
@@ -39,7 +38,7 @@ class ShortCodes extends Base {
 
         if(!$this->scriptIncluded){
             
-            //$this->scriptIncluded = true;
+            $this->scriptIncluded = true;
             
             return Template::get('templates/_script', [
                 'api_key' => $this->api_key(),
@@ -67,6 +66,10 @@ class ShortCodes extends Base {
         $defaults = [
             'tours' => true,
             'accom' => true,
+            'accom_tabname' => 'Accommodation',
+            'tours_tabname' => 'Tours',
+            'tours_search_path' => '/tours/',
+            'accom_search_path' => '/accommodation/',
         ];
 
         $data = array_merge($defaults, $this->options, $atts);
@@ -78,33 +81,11 @@ class ShortCodes extends Base {
         return $return;
     }
 
-    /**
-     * Return rooms template
-     * @param  array  $atts
-     * @return String
-     */
-    public function rooms($atts = []){
-
-        $this->load();
-
-        $defaults = [
-            'type' => 'accom',
-            'operator_id' => 0,
-        ];
-
-        $data = array_merge($defaults, $this->options, $atts);
-
-        $return = '';
-        $return .= $this->script();
-        $return .= Template::get('templates/rooms', $data);
-
-        return $return;
-    }
 
     /**
      * Display the single member
      *
-     * @param Array $atts
+     * @param array $atts
      * @return String
      */
     public function single($atts = [])

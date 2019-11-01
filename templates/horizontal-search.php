@@ -1,3 +1,44 @@
+<?php
+    $settings = [
+        'vcID' => $vc_id,
+        'hybridMode' => true,
+        'showRefineTools' => true,
+        'collapseRefineTools' => true,
+        'enableRegionSearch' => false,
+    ];
+
+    if(!empty($default_region_loc)){
+        $settings['defaultRegionLoc'] = $default_region_loc;
+    }
+
+    if($accom == 'true'){
+        $settings['hybridOptions']['accom'] = [
+            'tabName' => $accom_tabname,
+            'period' => 2,
+            'adults' => 2,
+            'children' => 0,
+            'defaultDaysFromToday' => 0,
+            'infants' => 0,
+            'minDaysFromToday' => 0,
+            'searchLocation' => $accom_search_path,
+        ];
+    }
+
+    if($tours == 'true'){
+        $settings['hybridOptions']['tours'] = [
+            'tabName' => $tours_tabname,
+            'period' => 1,
+            'adults' => 1,
+            'children' => 0,
+            'defaultDaysFromToday' => 0,
+            'infants' => 0,
+            'minDaysFromToday' => 0,
+            'searchLocation' => $tours_search_path,
+        ];
+    }
+
+
+?>
 <div class="horizontal-search">
     <div id="searchGadget" class="hybrid-widget">
         <div class="BE-hybrid-gadget"></div>
@@ -16,43 +57,9 @@ BE.gadget.cart("#toolbar-cart", {
 **/
 
 // load the search gadget, wait a moment otherwise gadget lib isnt loaded
-setTimeout(function(){
-    $w(function() {
-        BE.gadget.search("#searchGadget .BE-hybrid-gadget",{
-            vcID:<?php echo $vc_id ?>,
-            hybridMode:true,
-            showRefineTools:true,
-            collapseRefineTools:true,
-            hybridOptions:{
-                <?php if($accom == 'true'): ?>
-                "accom":{
-                    "tabName":"<?php echo $accom_tabname; ?>",
-                    "period":2,
-                    "adults":2,
-                    "children":0,
-                    "defaultDaysFromToday":0,
-                    "infants":0,
-                    "minDaysFromToday":0,
-                    "forceRegionLoc":'Devonport',
-                    "searchLocation":"<?php echo $accom_search_path ?>"
-                }
-                <?php endif; ?>
-                <?php if($tours == 'true' && $accom == 'true'): ?>,<?php endif; ?>
-                <?php if($tours == 'true'): ?>
-                "tours":{
-                    "tabName":"<?php echo $tours_tabname; ?>",
-                    "period":1,
-                    "adults":1,
-                    "children":0,
-                    "defaultDaysFromToday":0,
-                    "infants":0,
-                    "minDaysFromToday":0,
-                    "searchLocation":"<?php echo $tours_search_path ?>"
-                }<?php endif; ?>},
-            enableRegionSearch:false
-        });
-    });
-},500);
+$w(function() {
+    BE.gadget.search("#searchGadget .BE-hybrid-gadget", <?php echo json_encode($settings, JSON_PRETTY_PRINT | JSON_NUMERIC_CHECK); ?>);
+});
 
 // when the gadget has finished loading, move the advanced search link to the bottom, and move autocomplete box to the inside bottom
 $w.event.subscribe("region.refinetools.built", function(data) {

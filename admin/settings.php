@@ -99,6 +99,12 @@ class Settings extends Base {
             'type' => 'text',
             'title' => "Web Api Key",
             'desc' => 'Key for connecting to domain webapi.bookeasy.com.au',
+        ],
+
+        'maps_api_key' => [
+            'type' => 'text',
+            'title' => "Google Maps Api Key",
+            'desc' => 'Google maps api, leave blank if you do not want bookeasy to include its version of the maps api',
         ]
 
     ];
@@ -568,7 +574,7 @@ class Settings extends Base {
 
             case 'text':
                 printf(
-                    '<input type="text" id="'.$id.'" name="'.$this->optionGroup.'['.$id.']" value="%s" />',
+                    '<input type="text" id="'.$id.'" size="60" name="'.$this->optionGroup.'['.$id.']" value="%s" />',
                     isset( $this->options[$id] ) ? esc_attr( $this->options[$id]) : ''
                 );
                 echo '<p class="description">'.$desc.'</p>';

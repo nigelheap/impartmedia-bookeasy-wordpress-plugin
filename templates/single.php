@@ -1,15 +1,9 @@
 <div class="booking-widget">
-    <!-- ======================================================================
-    == ITEM GADGET
-    ====================================================================== -->
-    <div id="itemGadget" class=""></div>
-    <!-- /ITEM GADGET -->
+    <div id="itemGadget"></div>
 </div>
 <script type="text/javascript">
 
-
     function formatPrices() {
-        console.log('formatted prices');
         if(!!jQuery('.has-affiliate-link .tour-row-item .tour-row-item-occ').size()){
             jQuery('.has-affiliate-link .tour-row-item .tour-row-item-occ').each(function(){
                 jQuery(this).after(jQuery(this).clone().removeClass('tour-row-item-occ').addClass('tour-row-price'));

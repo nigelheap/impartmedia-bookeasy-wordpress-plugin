@@ -1,13 +1,17 @@
-<h1>Bookings</h1>
 <div id="booking-gadget">
     <div id="cart"></div>
     <div id="gadget"></div>
     <div class="finalising-model" style="display: none">
-        <h3>Finalising payment</h3>
-        <p>Please do not refresh the page during this process</p>
+        <div>
+            <h3>Finalising payment</h3>
+            <p>Please do not refresh the page during this process</p>
+            <div class="booking-spinner"></div>
+        </div>
     </div>
 </div>
 <script type="text/javascript">
+
+window.hasBookeasyCart = true;
 
 $w(function() {
     BE.gadget.book("#gadget", {
@@ -26,18 +30,13 @@ $w(function() {
         })
     }, 500);
 
-
     jQuery('body').on('click', '.acceptCancellationPolicy label, .receiveENewsletter label', function(){
       jQuery(this).siblings('input[type=checkbox]').click();
     });
-    // .finalising
-    // jQuery('.ccDetails .button').hasClass('finalising');
 
     var showFinalising = function(){
 
-      var finalisingCount = jQuery('.ccDetails .button').hasClass('finalising');
-
-      if(finalisingCount){
+      if(jQuery('.ccDetails .button').hasClass('finalising') || jQuery('.personalDetails > .button').hasClass('finalising')){
         jQuery('.finalising-model').show();
       } else {
         jQuery('.finalising-model').hide();
@@ -48,10 +47,6 @@ $w(function() {
         showFinalising();
         var checkFinalising = setInterval(showFinalising, 1000);
     });
-
-
-
-
 
 });
 

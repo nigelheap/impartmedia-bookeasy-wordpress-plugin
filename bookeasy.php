@@ -12,7 +12,7 @@ Author URI: http://www.nigelheap.com
 
 
 define('BOOKEASY_PLUGIN', 'bookeasy');
-define('BOOKEASY_VERSION', '2.7.8');
+define('BOOKEASY_VERSION', '2.8.1');
 define('BOOKEASY_ENDPOINT', 'https://webapi.bookeasy.com.au');
 define('BOOKEASY_ENDPOINT_PVT', 'https://webapi-pvt.bookeasy.com.au');
 define('BOOKEASY_VISIBLEOPERATORS', '/api/getVcOperatorIds?q=[vc_id]');

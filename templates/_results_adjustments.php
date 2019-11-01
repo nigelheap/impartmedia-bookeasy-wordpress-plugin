@@ -34,7 +34,6 @@
         }, 100); // check every 100ms
     }
 
-
     var checkFormExistHide = setInterval(function() {
        if (jQuery('.search-gadget .tourTypes').length) {
           var $searchForm = jQuery('.search-gadget');
@@ -44,7 +43,6 @@
           clearInterval(checkFormExistHide);
        }
     }, 100); // check every 100ms
-
 
     var checkCalendarExistsHide = setInterval(function() {
        if (jQuery('.wdDatePicker-Outer').length) {

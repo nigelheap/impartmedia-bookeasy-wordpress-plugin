@@ -24,6 +24,7 @@ class ShortCodes extends Base {
         add_shortcode('bookeasy_book', [$this, 'book']);
         add_shortcode('bookeasy_confirm', [$this, 'confirm']);
         add_shortcode('bookeasy_script', [$this, 'script']);
+        add_shortcode('bookeasy_hidden_cart', [$this, 'hidden_cart']);
 
 
         add_shortcode('bookeasy_field', [$this, 'field']);
@@ -41,6 +42,7 @@ class ShortCodes extends Base {
     {
         return get_post_field('post_content');
     }
+
 
     /**
      * @return string
@@ -100,6 +102,23 @@ class ShortCodes extends Base {
         return '';
     }
 
+
+    /**
+     * @param $attr
+     *
+     * @return false|string
+     */
+    public function hidden_cart($attr)
+    {
+        if(empty($atts)){
+            $atts = [];
+        }
+
+        $data = array_merge($this->options, $atts);
+
+        return Template::get('templates/hidden-cart', $data);
+    }
+
     /** 
      * Shortcodes 
      *
@@ -120,6 +139,8 @@ class ShortCodes extends Base {
             'tours_tabname' => 'Tours',
             'tours_search_path' => '/tours/',
             'accom_search_path' => '/accommodation/',
+            'default_region_loc' => false,
+            'google_maps_api' => !empty($this->options['maps_api_key']) ? $this->options['maps_api_key'] : false,
         ];
 
         $data = array_merge($defaults, $this->options, $atts);
@@ -204,7 +225,7 @@ class ShortCodes extends Base {
             'force_accom_type' => false,
             'platinum_partners_limit' => false,
             'default_region_loc' => false,
-            'google_maps_api' => get_option('maps_api_key', ''),
+            'google_maps_api' => !empty($this->options['maps_api_key']) ? $this->options['maps_api_key'] : false,
         ];
 
         if(!empty($atts['limit_locations'])){
@@ -281,7 +302,7 @@ class ShortCodes extends Base {
             'adults' => '1',
             'force_tour_type' => false,
             'default_region_loc' => false,
-            'google_maps_api' => get_option('maps_api_key', ''),
+            'google_maps_api' => !empty($this->options['maps_api_key']) ? $this->options['maps_api_key'] : false,
         ];
 
         if(!empty($atts['limit_locations'])){

@@ -23,3 +23,14 @@ https://webapi.bookeasy.com.au/api/getOperatorsInformation?q=vc_id
 ### Forced cron
 
 ``` 0 0 * * * /path/to/wp/plugins/bookeasy/api/sync.php ``` 
+
+# Hidden cart for non gadget pages 
+
+```
+<a href="/book/" class="cart-button">
+    <span class="cart-count" style="display:none;">0</span>
+    <i class="fas fa-shopping-cart"></i>
+</a>
+```
+Then add this somewhere at the bottom of the site so it gets 
+[bookeasy_hidden_cart]

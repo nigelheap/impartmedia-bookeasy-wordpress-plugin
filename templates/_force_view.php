@@ -9,7 +9,6 @@
     }
 
     jQuery(document).on("bookeasyListLoaded", function(){
-
         if(jQuery(document).data('set-view') != 'done'){
             setView();
             jQuery(document).data('set-view', 'done');
@@ -26,6 +25,5 @@
     }
 
     maybeSetView();
-
 
 </script>

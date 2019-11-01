@@ -37,11 +37,8 @@ $w(function() {
         <?php if(!empty($google_maps_api)): ?>googleMapsKey : "<?php echo $google_maps_api; ?>",<?php endif; ?>
         <?php if(!empty($limit_locations) && is_array($limit_locations)): ?>limitLocations : <?php echo json_encode($limit_locations); ?>,<?php endif; ?>
         <?php if(!empty($default_region_loc)): ?>defaultRegionLoc : "<?php echo $default_region_loc; ?>",<?php endif; ?>
-
-        vcLocations:[{"name":"Margaret River Visitor Centre","lat":-33.948709,"lng":115.074183}],
-        enableRegionSearch:false
+       enableRegionSearch:false
     });
-    jQuery('head link[href="//gadgets.impartmedia.com/css/all.cssz"]').remove();
 
     jQuery('#regionGadget .view-choice .price span').click();
 
@@ -51,10 +48,5 @@ $w(function() {
 });
 </script>
 <?php echo  \Bookeasy\library\Template::get('templates/_results_adjustments'); ?>
-<?php echo  \Bookeasy\library\Template::get('templates/_platinum_partners', array(
-    'platinum_partners_limit' => !empty($platinum_partners_limit) ? $platinum_partners_limit : false,
-    'platinum_partners_term' => 'tours',
-    'platinum_partners_taxonomy' => $taxonomy,
-)); ?>
 <?php echo  \Bookeasy\library\Template::get('templates/_hide_operators'); ?>
 <?php echo  \Bookeasy\library\Template::get('templates/_force_view'); ?>

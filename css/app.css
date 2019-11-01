@@ -144,14 +144,17 @@
     text-align: left;
 }
 
-.search-gadget .button {
-    cursor: pointer
+
+
+.search-gadget > .button {
+    cursor: pointer;
+    display: none;
 }
 
 .search-gadget .button a {
     display: block;
     text-align: center;
-    background-color: #f04670;
+    background-color: #32c290;  /* NI Custom Color */
     border-radius: 3px;
     width: 100%;
     border: 0;
@@ -165,8 +168,13 @@
     margin-bottom: 0.5em;
 }
 
+
 .search-gadget .button a:hover {
-    background-color: #932d46
+    background-color: #29a080 /* NI Custom Color */
+}
+
+.hybrid-widget .search-gadget > .button {
+    display: inline-block;
 }
 
 .search-gadget .showHideRefineTools {
@@ -267,7 +275,7 @@
 
     .search-gadget .sortBy {
         display: inline-block;
-        margin: 0 -10px;
+        margin: 0 0; /*Niche remove 10px negative margin left */
         width: 40%
     }
 
@@ -401,7 +409,7 @@
 .priceGrid a.im-pricebutton {
     display: inline-block;
     text-align: center;
-    background-color: #f04670;
+    background-color: #32c290;
     border-radius: 3px;
     border: 0;
     text-transform: uppercase;
@@ -417,7 +425,7 @@
 }
 
 .priceGrid a.im-pricebutton:hover{
-    background-color: #932d46;
+    background-color: #29a080;
 }
 
 .priceGrid table tbody a.im-pricebutton > span{
@@ -548,7 +556,7 @@
 }
 
 .priceGrid table tbody tr:hover a.im-pricebutton:not(.sold-out) {
-    background-color: #932d46;
+    background-color: #29a080;
 }
 
 .priceGrid table tbody tr td.name .RoomConfig .OperatorItemContent,
@@ -791,7 +799,7 @@
 .prices-grid .total .btn-enquire {
     display: block;
     text-align: center;
-    background-color: #f04670;
+    background-color: #32c290;
     border-radius: 3px;
     width: 100%;
     border: 0;
@@ -809,7 +817,7 @@
 
 .prices-grid .total .price:hover, 
 .prices-grid .total .btn-enquire:hover {
-    background-color: #932d46;
+    background-color: #29a080;
 }
 
 .prices-grid .total .price .book,
@@ -1031,25 +1039,11 @@
     content: "Self Rated"
 }
 
-.region-gadget div.tabs-group {
-	display: none;
+.region-gadget{
+    margin-top: 30px;
+    position: relative;
 }
 
-.region-gadget .tabs-group span.label, 
-.region-gadget a.list {
-    display: none;
-}
-
-.region-gadget a.price, .region-gadget a.map {
-	padding: 10px;
-	cursor: pointer;
-	font-size: 18px;
-	font-weight: bold;
-}
-
-.region-gadget .embedded-search {
-    margin-top: 5px;
-}
 
 .region-gadget .view-choice a {
 	background-color: #e0e0e0;
@@ -1063,13 +1057,6 @@
     border-top-left-radius: 0;
 }
 
-.region-gadget .view-choice a.current {
-    border: 1px solid #d2cfce;
-    border-bottom: 1px solid #fbfaf6;
-    background-color: #fbfaf6;
-    position: relative;
-    z-index: 10;
-}
 
 .region-gadget .product-list div.odd {
 	background-color: #FFF;
@@ -1258,7 +1245,7 @@
 
     .prices-grid table tbody tr:hover td.total .price {
         color: #fff !important;
-        background-color: #932d46;
+        background-color: #29a080;
         transition: all ease-in-out .4s
     }
 
@@ -1355,7 +1342,6 @@
     }
 
     .map-container .product-list .name {
-        font: italic 700 1.4em Georgia, serif;
         display: block;
         font-size: 20px;
         color: #000;
@@ -1366,7 +1352,6 @@
     .map-container .product-list .location {
         display: block;
         text-transform: uppercase;
-        font: normal 400 12px 'Open Sans';
         color: #999;
         margin-bottom: 1em
     }
@@ -1975,7 +1960,7 @@
 .booking-gadget .button a {
     display: block;
     text-align: center;
-    background-color: #f04670;
+    background-color: #32c290;
     border-radius: 6px;
     width: 100%;
     border: 0;
@@ -2268,7 +2253,7 @@
 
     display: block;
     text-align: center;
-    background-color: #f04670;
+    background-color: #32c290;
     border-radius: 5px;
     width: 100%;
     border: 0;
@@ -2302,7 +2287,7 @@
 .item-details .addButton a:hover,
 .item-details .location a:hover,
 .item-details .removeItem a:hover {
-    background-color: #932d46;
+    background-color: #29a080;
 }
 
 .add-to-cart-form .removeItem,
@@ -2375,6 +2360,7 @@
     margin-top: 40px;
 }
 
+.region-gadget div.tabs-group,
 .search-gadget .hybridTabs{
     padding: 0 10px;
     margin-bottom: 0.5em;
@@ -2382,6 +2368,7 @@
     top: -29px;
 }
 
+.region-gadget .view-choice a,
 .search-gadget .hybridTabs .tab{
     background: #ccc;
     color: rgba(1,0,12,0.8);
@@ -2391,10 +2378,31 @@
     cursor: pointer;
 }
 
-.search-gadget .hybridTabs .tab.current{
 
+
+.region-gadget   a.current,
+.search-gadget .hybridTabs .tab.current{
     background: rgba(1,0,12,0.8);
     color: #fff;
+}
+
+.region-gadget .view-choice a.current {
+    border-bottom: 1px solid rgba(1,0,12,0.8);
+    background-color: rgba(1,0,12,0.8);
+    color: #fff;
+    position: relative;
+    z-index: 10;
+}
+
+.region-gadget .view-choice a.current:hover{
+    color: #fff;
+}
+
+
+
+.region-gadget .view-choice .label,
+.region-gadget a.list{
+    display: none;
 }
 
 @media(min-width:722px) {
@@ -2516,13 +2524,13 @@
     background: #f5f5f5
 }
 
-.wdDatePicker-Outer .wdDatePicker_calendar select {
-    margin: 0 32px
-}
-
 .wdDatePicker-Outer .wdDatePicker_calendar .dayHeader th {
     background: #353535;
     color: #a1a1a1
+}
+
+.wdDatePicker-Outer #wdDatePicker-chronNav #wdDatePicker-next::after {
+    display: none;
 }
 
 @keyframes slide {
@@ -2664,7 +2672,7 @@ div.region-gadget.BE div.prices-grid div.type-group table div.specials div.speci
 
 .shopping-cart .cartItems > .checkout a {
     display: inline-block;
-    background-color: #f04670;
+    background-color: #32c290;
     padding: 1em 1.5em;
     border-radius: 3px;
     border: 0;
@@ -2677,7 +2685,7 @@ div.region-gadget.BE div.prices-grid div.type-group table div.specials div.speci
 }
 
 .shopping-cart .cartItems > .checkout a:hover {
-    background-color: #932d46;
+    background-color: #29a080;
 }
 
 .booking-questions .accordian .accordian-header{

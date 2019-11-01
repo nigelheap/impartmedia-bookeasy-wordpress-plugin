@@ -406,7 +406,12 @@ class Import extends Base {
                 $post_id = $this->getPostIdFromName($post_name);
             }
 
-            $status = in_array(intval($operatorId), $this->visibleOperators) ? 'publish' : 'draft';
+            if(!empty($this->visibleOperators)){
+                $status = in_array(intval($operatorId), $this->visibleOperators) ? 'publish' : 'draft';
+            } else {
+                $status = 'publish';
+            }
+
 
             // Does this operator id exist already?
             if(!empty($post_id)){

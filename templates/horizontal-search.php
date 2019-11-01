@@ -33,6 +33,7 @@ setTimeout(function(){
                     "defaultDaysFromToday":0,
                     "infants":0,
                     "minDaysFromToday":0,
+                    "forceRegionLoc":'Devonport',
                     "searchLocation":"<?php echo $accom_search_path ?>"
                 }
                 <?php endif; ?>

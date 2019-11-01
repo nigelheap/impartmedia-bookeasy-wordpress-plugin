@@ -45,6 +45,7 @@
        }
     }, 100); // check every 100ms
 
+
     var checkCalendarExistsHide = setInterval(function() {
        if (jQuery('.wdDatePicker-Outer').length) {
           jQuery('.wdDatePicker-Outer').click(function(){

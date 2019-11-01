@@ -25,8 +25,58 @@ class ShortCodes extends Base {
         add_shortcode('bookeasy_confirm', [$this, 'confirm']);
         add_shortcode('bookeasy_script', [$this, 'script']);
 
+
+        add_shortcode('bookeasy_field', [$this, 'field']);
+        add_shortcode('bookeasy_content', [$this, 'content']);
+
         //#todo need to remove this one day when we make logical changes to tour plugin 
         add_shortcode('bookeasy_platinum_partners', [$this, 'platinum_partners']);
+    }
+
+
+    /**
+     * @return string
+     */
+    public function content()
+    {
+        return get_post_field('post_content');
+    }
+
+    /**
+     * @return string
+     */
+    public function field($atts)
+    {
+        if(empty($atts)){
+            $atts = [];
+        }
+
+        $data = array_merge([
+            'key' => false,
+        ], $atts);
+
+        if(empty($data['key'])){
+            return '';
+        }
+
+        $key = $data['key'];
+        $content = new Content();
+
+        if($first = strpos($key, '.')){
+            $drill = substr($key, $first);
+            $key = substr($key, 0, $first);
+
+        }
+
+        $field = $content->get_field($key);
+
+        if(isset($drill)){
+            $field = $content->pull($field, $drill);
+        }
+
+        return $field;
+
+
     }
 
     /**

@@ -316,12 +316,30 @@ class Settings extends Base {
                             <br>
                         </p>
 
+                        <h2>Bookeasy Field</h2>
+                        <p>
+                            <pre><code>[bookeasy_field key="ShortDetails.Description"]</code></pre>
+                            <pre><code>[bookeasy_field key="Location"]</code></pre>
+                            <pre><code>[bookeasy_field key="Directions"]</code></pre>
+                            <pre><code>[bookeasy_field key="Cancellation"]</code></pre>
+                            <pre><code>[bookeasy_field key="ShortDetails.CancellationPolicy"]</code></pre>
+                            <br>
+                        </p>
+
+                        <h2>Bookeasy Content</h2>
+                        <p>
+                            <pre><code>[bookeasy_content]</code></pre>
+                            <br>
+                        </p>
+
                     </div>
+
+
                     <h3>Helpers</h3>
                     <div class="inner-inner">
                         <p>
                             ... Soon
-                            <pre><code>$rooms = Bookeasy_Helpers::rooms($operatorID, get_the_ID());</code></pre>
+                            <pre><code>$rooms = \Bookeasy\frontend\Helpers::rooms($operatorID, get_the_ID());</code></pre>
                             <br />
                             <br />
                         </p>
